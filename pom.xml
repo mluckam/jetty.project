@@ -767,8 +767,11 @@
               <LC_ALL>en_US.UTF-8</LC_ALL>
             </environmentVariables>
             <properties>
+              <!-- execute top-level classes in parallel but methods in same thread -->
               <configurationParameters>
                 junit.jupiter.execution.parallel.enabled=true
+                junit.jupiter.execution.parallel.mode.default=same_thread
+                junit.jupiter.execution.parallel.mode.classes.default=concurrent
               </configurationParameters>
             </properties>
           </configuration>
