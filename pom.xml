@@ -766,6 +766,11 @@
             <environmentVariables>
               <LC_ALL>en_US.UTF-8</LC_ALL>
             </environmentVariables>
+            <properties>
+              <configurationParameters>
+                junit.jupiter.execution.parallel.enabled=true
+              </configurationParameters>
+            </properties>
           </configuration>
           <dependencies>
             <dependency>
