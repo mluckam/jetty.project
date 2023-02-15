@@ -87,6 +87,7 @@
     <jetty-quiche-native.version>0.16.0</jetty-quiche-native.version>
     <jetty-test-policy.version>1.2</jetty-test-policy.version>
     <jetty.test.version>6.0</jetty.test.version>
+<!--    <jetty.test.version>6.0.parallel-SNAPSHOT</jetty.test.version>-->
     <jetty.xhtml.schemas-version>1.1</jetty.xhtml.schemas-version>
     <jmh.version>1.36</jmh.version>
     <jna.version>5.13.0</jna.version>
@@ -759,7 +760,6 @@
             <systemPropertyVariables>
               <java.io.tmpdir>${project.build.directory}</java.io.tmpdir>
               <jetty.unixdomain.dir>${jetty.unixdomain.dir}</jetty.unixdomain.dir>
-              <junit.jupiter.extensions.autodetection.enabled>true</junit.jupiter.extensions.autodetection.enabled>
               <jetty.testtracker.log>${jetty.testtracker.log}</jetty.testtracker.log>
             </systemPropertyVariables>
             <!-- The LC_ALL env variable must have some UTF variant otherwise creating and/or reading files with non-ascii names doesn't work -->
@@ -774,6 +774,8 @@
                 junit.jupiter.execution.parallel.mode.classes.default=concurrent
                 junit.jupiter.execution.parallel.config.strategy=fixed
                 junit.jupiter.execution.parallel.config.fixed.parallelism=3
+
+                junit.jupiter.extensions.autodetection.enabled=false
               </configurationParameters>
             </properties>
           </configuration>
