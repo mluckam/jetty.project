@@ -758,7 +758,7 @@
             <!-- order can be different depending on os jvm so let's force it -->
             <runOrder>alphabetical</runOrder>
             <systemPropertyVariables>
-              <java.io.tmpdir>${project.build.directory}</java.io.tmpdir>
+              <java.io.tmpdir>${project.build.directory}/tmp</java.io.tmpdir>
               <jetty.unixdomain.dir>${jetty.unixdomain.dir}</jetty.unixdomain.dir>
               <jetty.testtracker.log>${jetty.testtracker.log}</jetty.testtracker.log>
             </systemPropertyVariables>
