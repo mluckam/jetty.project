@@ -20,12 +20,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jetty.toolchain.test.jupiter.WorkDir;
+import org.eclipse.jetty.toolchain.test.jupiter.WorkDirExtension;
 import org.eclipse.jetty.util.resource.FileSystemPool;
 import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.util.resource.ResourceFactory;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
@@ -37,6 +39,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 /**
  * OrderingTest
  */
+@ExtendWith(WorkDirExtension.class)
 public class OrderingTest
 {
     WorkDir workDir;
