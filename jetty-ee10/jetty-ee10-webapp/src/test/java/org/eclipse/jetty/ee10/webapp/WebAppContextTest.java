@@ -44,7 +44,6 @@ import org.eclipse.jetty.server.handler.DefaultHandler;
 import org.eclipse.jetty.toolchain.test.FS;
 import org.eclipse.jetty.toolchain.test.MavenTestingUtils;
 import org.eclipse.jetty.toolchain.test.jupiter.WorkDir;
-import org.eclipse.jetty.toolchain.test.jupiter.WorkDirExtension;
 import org.eclipse.jetty.util.FileID;
 import org.eclipse.jetty.util.URIUtil;
 import org.eclipse.jetty.util.component.LifeCycle;
@@ -54,7 +53,12 @@ import org.hamcrest.Matchers;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.CleanupMode;
+import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
+import org.junit.jupiter.api.parallel.Isolated;
+import org.junit.jupiter.api.parallel.ResourceLock;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -76,7 +80,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@ExtendWith(WorkDirExtension.class)
+@Isolated()
+@Execution(ExecutionMode.SAME_THREAD)
 public class WebAppContextTest
 {
     public static final Logger LOG = LoggerFactory.getLogger(WebAppContextTest.class);
@@ -108,6 +113,7 @@ public class WebAppContextTest
     }
 
     @Test
+    @ResourceLock("org.eclipse.jetty.ee10.webapp.Configurations")
     public void testDefaultContextPath() throws Exception
     {
         Server server = newServer();
@@ -160,6 +166,7 @@ public class WebAppContextTest
     }
 
     @Test
+    @ResourceLock("org.eclipse.jetty.ee10.webapp.Configurations")
     public void testConfigurationClassesFromDefault()
     {
         Configurations.cleanKnown();
@@ -185,6 +192,7 @@ public class WebAppContextTest
     }
 
     @Test
+    @ResourceLock("org.eclipse.jetty.ee10.webapp.Configurations")
     public void testConfigurationOrder()
     {
         Configurations.cleanKnown();
@@ -209,6 +217,7 @@ public class WebAppContextTest
     }
 
     @Test
+    @ResourceLock("org.eclipse.jetty.ee10.webapp.Configurations")
     public void testConfigurationInstances()
     {
         Configurations.cleanKnown();
@@ -226,6 +235,7 @@ public class WebAppContextTest
     }
 
     @Test
+    @ResourceLock("org.eclipse.jetty.ee10.webapp.Configurations")
     public void testRealPathDoesNotExist() throws Exception
     {
         Server server = newServer();
@@ -244,6 +254,7 @@ public class WebAppContextTest
      * @throws Exception on test failure
      */
     @Test
+    @ResourceLock("org.eclipse.jetty.ee10.webapp.Configurations")
     public void testContextWhiteList() throws Exception
     {
         Server server = newServer();
@@ -271,9 +282,9 @@ public class WebAppContextTest
     }
 
     @Test
-    public void testAlias() throws Exception
+    @ResourceLock("org.eclipse.jetty.ee10.webapp.Configurations")
+    public void testAlias(@TempDir(cleanup = CleanupMode.ON_SUCCESS) Path tempDir) throws Exception
     {
-        Path tempDir = workDir.getEmptyPathDir().resolve("dir");
         FS.ensureEmpty(tempDir);
 
         Path webinf = tempDir.resolve("WEB-INF");
@@ -298,6 +309,7 @@ public class WebAppContextTest
     }
 
     @Test
+    @ResourceLock("org.eclipse.jetty.ee10.webapp.Configurations")
     public void testIsProtected()
     {
         WebAppContext context = new WebAppContext();
@@ -315,6 +327,7 @@ public class WebAppContextTest
         "/foo/%2e%2e/test.xml",
         "/foo/%u002e%u002e/test.xml"
     })
+    @ResourceLock("org.eclipse.jetty.ee10.webapp.Configurations")
     public void testUnProtectedTarget(String target) throws Exception
     {
         Server server = newServer();
@@ -356,6 +369,7 @@ public class WebAppContextTest
         "/WEB-INF%u002Ftest.xml",
         "/WEB-INF%2ftest.xml"
     })
+    @ResourceLock("org.eclipse.jetty.ee10.webapp.Configurations")
     public void testProtectedTarget(String target) throws Exception
     {
         Server server = newServer();
@@ -383,6 +397,7 @@ public class WebAppContextTest
         "/WEB-INF%00/test.xml",
         "/WEB-INF%u0000/test.xml"
     })
+    @ResourceLock("org.eclipse.jetty.ee10.webapp.Configurations")
     public void testProtectedTargetFailure(String path) throws Exception
     {
         Server server = newServer();
@@ -406,6 +421,7 @@ public class WebAppContextTest
     }
 
     @Test
+    @ResourceLock("org.eclipse.jetty.ee10.webapp.Configurations")
     public void testNullPath() throws Exception
     {
         Server server = newServer();
@@ -469,6 +485,7 @@ public class WebAppContextTest
     }
 
     @Test
+    @ResourceLock("org.eclipse.jetty.ee10.webapp.Configurations")
     public void testBaseResourceAbsolutePath() throws Exception
     {
         Server server = newServer();
@@ -496,6 +513,7 @@ public class WebAppContextTest
     }
 
     @Test
+    @ResourceLock("org.eclipse.jetty.ee10.webapp.Configurations")
     public void testGetResourceFromCollection() throws Exception
     {
         Server server = newServer();
@@ -514,6 +532,7 @@ public class WebAppContextTest
     }
 
     @Test
+    @ResourceLock("org.eclipse.jetty.ee10.webapp.Configurations")
     public void testGetResourcePathsFromCollection() throws Exception
     {
         Server server = newServer();
@@ -656,6 +675,7 @@ public class WebAppContextTest
     }
 
     @Test
+    @ResourceLock("org.eclipse.jetty.ee10.webapp.Configurations")
     void testSetServerPropagation()
     {
         Server server = new Server();

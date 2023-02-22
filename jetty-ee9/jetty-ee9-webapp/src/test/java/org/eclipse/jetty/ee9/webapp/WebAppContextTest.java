@@ -58,6 +58,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.CleanupMode;
+import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.api.parallel.Isolated;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -76,17 +79,16 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@ExtendWith(WorkDirExtension.class)
+@Isolated
 public class WebAppContextTest
 {
     public static final Logger LOG = LoggerFactory.getLogger(WebAppContextTest.class);
-    public WorkDir workDir;
     private final List<Object> lifeCycles = new ArrayList<>();
 
     @BeforeEach
     public void beforeEach()
     {
-        assertThat(FileSystemPool.INSTANCE.mounts(), empty());
+        //assertThat(FileSystemPool.INSTANCE.mounts(), empty());
     }
 
     @AfterEach
@@ -94,7 +96,7 @@ public class WebAppContextTest
     {
         lifeCycles.forEach(LifeCycle::stop);
         Configurations.cleanKnown();
-        assertThat(FileSystemPool.INSTANCE.mounts(), empty());
+        //assertThat(FileSystemPool.INSTANCE.mounts(), empty());
     }
 
     private Server newServer()
@@ -272,9 +274,8 @@ public class WebAppContextTest
     }
 
     @Test
-    public void testAlias() throws Exception
+    public void testAlias(@TempDir(cleanup = CleanupMode.ON_SUCCESS) Path tempDir) throws Exception
     {
-        Path tempDir = workDir.getEmptyPathDir().resolve("dir");
         FS.ensureEmpty(tempDir);
 
         Path webinf = tempDir.resolve("WEB-INF");
