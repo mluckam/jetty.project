@@ -38,7 +38,6 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jetty.toolchain.test.FS;
-import org.eclipse.jetty.toolchain.test.jupiter.WorkDir;
 import org.eclipse.jetty.util.BufferUtil;
 import org.eclipse.jetty.util.IO;
 import org.eclipse.jetty.util.resource.Resource;
@@ -461,9 +460,8 @@ public class IOTest
     }
 
     @Test
-    public void testDeleteNonExistentFile(WorkDir workDir)
+    public void testDeleteNonExistentFile(@TempDir(cleanup = ON_SUCCESS) Path dir)
     {
-        Path dir = workDir.getEmptyPathDir();
         FS.ensureEmpty(dir);
         Path noFile = dir.resolve("nada");
         assertFalse(IO.delete(noFile));
@@ -477,18 +475,16 @@ public class IOTest
     }
 
     @Test
-    public void testIsEmptyDoesNotExist(WorkDir workDir)
+    public void testIsEmptyDoesNotExist(@TempDir(cleanup = ON_SUCCESS) Path dir)
     {
-        Path dir = workDir.getEmptyPathDir();
         FS.ensureEmpty(dir);
         Path noFile = dir.resolve("nada");
         assertTrue(IO.isEmptyDir(noFile.toFile()));
     }
 
     @Test
-    public void testIsEmptyExistButAsFile(WorkDir workDir) throws IOException
+    public void testIsEmptyExistButAsFile(@TempDir(cleanup = ON_SUCCESS) Path dir) throws IOException
     {
-        Path dir = workDir.getEmptyPathDir();
         FS.ensureEmpty(dir);
         Path file = dir.resolve("nada");
         FS.touch(file);
@@ -496,17 +492,15 @@ public class IOTest
     }
 
     @Test
-    public void testIsEmptyExistAndIsEmpty(WorkDir workDir)
+    public void testIsEmptyExistAndIsEmpty(@TempDir(cleanup = ON_SUCCESS) Path dir)
     {
-        Path dir = workDir.getEmptyPathDir();
         FS.ensureEmpty(dir);
         assertTrue(IO.isEmptyDir(dir.toFile()));
     }
 
     @Test
-    public void testIsEmptyExistAndHasContent(WorkDir workDir) throws IOException
+    public void testIsEmptyExistAndHasContent(@TempDir(cleanup = ON_SUCCESS) Path dir) throws IOException
     {
-        Path dir = workDir.getEmptyPathDir();
         FS.ensureEmpty(dir);
         Path file = dir.resolve("nada");
         FS.touch(file);
@@ -554,9 +548,8 @@ public class IOTest
     }
 
     @Test
-    public void testSymbolicLink(WorkDir workDir) throws Exception
+    public void testSymbolicLink(@TempDir(cleanup = ON_SUCCESS) Path dir) throws Exception
     {
-        Path dir = workDir.getEmptyPathDir();
         FS.ensureEmpty(dir);
         Path realPath = dir.resolve("real");
         FS.touch(realPath);
@@ -577,9 +570,8 @@ public class IOTest
     }
 
     @Test
-    public void testSymbolicLinkDir(WorkDir workDir) throws Exception
+    public void testSymbolicLinkDir(@TempDir(cleanup = ON_SUCCESS) Path dir) throws Exception
     {
-        Path dir = workDir.getEmptyPathDir();
         FS.ensureEmpty(dir);
 
         Path realDirPath = dir.resolve("real");

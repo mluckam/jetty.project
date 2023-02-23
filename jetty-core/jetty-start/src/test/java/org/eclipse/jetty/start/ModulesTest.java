@@ -24,10 +24,8 @@ import org.eclipse.jetty.start.config.ConfigSources;
 import org.eclipse.jetty.start.config.JettyBaseConfigSource;
 import org.eclipse.jetty.start.config.JettyHomeConfigSource;
 import org.eclipse.jetty.toolchain.test.MavenTestingUtils;
-import org.eclipse.jetty.toolchain.test.jupiter.WorkDir;
-import org.eclipse.jetty.toolchain.test.jupiter.WorkDirExtension;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.TempDir;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
@@ -35,20 +33,17 @@ import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
+import static org.junit.jupiter.api.io.CleanupMode.ON_SUCCESS;
 
-@ExtendWith(WorkDirExtension.class)
 public class ModulesTest
 {
     private static final String TEST_SOURCE = "<test>";
 
-    public WorkDir testdir;
-
     @Test
-    public void testLoadAllModules() throws IOException
+    public void testLoadAllModules(@TempDir(cleanup = ON_SUCCESS) Path baseDir) throws IOException
     {
         // Test Env
         Path homeDir = MavenTestingUtils.getTestResourcePathDir("dist-home");
-        Path baseDir = testdir.getEmptyPathDir();
         String[] cmdLine = new String[]{"jetty.version=TEST"};
 
         // Configuration
@@ -140,11 +135,10 @@ public class ModulesTest
     }
 
     @Test
-    public void testResolveServerHttp() throws IOException
+    public void testResolveServerHttp(@TempDir(cleanup = ON_SUCCESS) Path baseDir) throws IOException
     {
         // Test Env
         Path homeDir = MavenTestingUtils.getTestResourcePathDir("dist-home");
-        Path baseDir = testdir.getEmptyPathDir();
         String[] cmdLine = new String[]{"jetty.version=TEST"};
 
         // Configuration
@@ -203,11 +197,10 @@ public class ModulesTest
     }
 
     @Test
-    public void testResolveNotRequiredModuleNotFound() throws IOException
+    public void testResolveNotRequiredModuleNotFound(@TempDir(cleanup = ON_SUCCESS) Path baseDir) throws IOException
     {
         // Test Env
         Path homeDir = MavenTestingUtils.getTestResourcePathDir("non-required-deps");
-        Path baseDir = testdir.getEmptyPathDir();
         String[] cmdLine = new String[]{"bar.type=cannot-find-me"};
 
         // Configuration
@@ -252,11 +245,10 @@ public class ModulesTest
     }
 
     @Test
-    public void testResolveNotRequiredModuleFound() throws IOException
+    public void testResolveNotRequiredModuleFound(@TempDir(cleanup = ON_SUCCESS) Path baseDir) throws IOException
     {
         // Test Env
         Path homeDir = MavenTestingUtils.getTestResourcePathDir("non-required-deps");
-        Path baseDir = testdir.getEmptyPathDir();
         String[] cmdLine = new String[]{"bar.type=dive"};
 
         // Configuration
@@ -303,11 +295,10 @@ public class ModulesTest
     }
 
     @Test
-    public void testResolveNotRequiredModuleFoundDynamic() throws IOException
+    public void testResolveNotRequiredModuleFoundDynamic(@TempDir(cleanup = ON_SUCCESS) Path baseDir) throws IOException
     {
         // Test Env
         Path homeDir = MavenTestingUtils.getTestResourcePathDir("non-required-deps");
-        Path baseDir = testdir.getEmptyPathDir();
         String[] cmdLine = new String[]{"bar.type=dynamic"};
 
         // Configuration
