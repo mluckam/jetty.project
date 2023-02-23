@@ -22,6 +22,14 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <surefire.failIfNoSpecifiedTests>false</surefire.failIfNoSpecifiedTests>
 
+    <!-- execute top-level classes in parallel but methods in same thread -->
+    <junit.jupiter.execution.parallel.enabled>true</junit.jupiter.execution.parallel.enabled>
+    <junit.jupiter.execution.parallel.mode.default>same_thread</junit.jupiter.execution.parallel.mode.default>
+    <junit.jupiter.execution.parallel.mode.classes.default>concurrent</junit.jupiter.execution.parallel.mode.classes.default>
+    <junit.jupiter.execution.parallel.config.strategy>fixed</junit.jupiter.execution.parallel.config.strategy>
+    <junit.jupiter.execution.parallel.config.fixed.parallelism>3</junit.jupiter.execution.parallel.config.fixed.parallelism>
+    <junit.jupiter.extensions.autodetection.enabled>false</junit.jupiter.extensions.autodetection.enabled>
+
     <!-- dependency versions -->
     <alpn.agent.version>2.0.10</alpn.agent.version>
     <ant.version>1.10.13</ant.version>
@@ -767,15 +775,13 @@
               <LC_ALL>en_US.UTF-8</LC_ALL>
             </environmentVariables>
             <properties>
-              <!-- execute top-level classes in parallel but methods in same thread -->
               <configurationParameters>
-                junit.jupiter.execution.parallel.enabled=true
-                junit.jupiter.execution.parallel.mode.default=same_thread
-                junit.jupiter.execution.parallel.mode.classes.default=concurrent
-                junit.jupiter.execution.parallel.config.strategy=fixed
-                junit.jupiter.execution.parallel.config.fixed.parallelism=3
-
-                junit.jupiter.extensions.autodetection.enabled=false
+                junit.jupiter.execution.parallel.enabled=${junit.jupiter.execution.parallel.enabled}
+                junit.jupiter.execution.parallel.mode.default=${junit.jupiter.execution.parallel.mode.default}
+                junit.jupiter.execution.parallel.mode.classes.default=${junit.jupiter.execution.parallel.mode.classes.default}
+                junit.jupiter.execution.parallel.config.strategy=${junit.jupiter.execution.parallel.config.strategy}
+                junit.jupiter.execution.parallel.config.fixed.parallelism=${junit.jupiter.execution.parallel.config.fixed.parallelism}
+                junit.jupiter.extensions.autodetection.enabled=${junit.jupiter.extensions.autodetection.enabled}
               </configurationParameters>
             </properties>
           </configuration>
