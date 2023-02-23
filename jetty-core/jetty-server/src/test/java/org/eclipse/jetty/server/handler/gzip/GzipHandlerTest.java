@@ -63,7 +63,6 @@ import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.eclipse.jetty.toolchain.test.FS;
 import org.eclipse.jetty.toolchain.test.MavenPaths;
 import org.eclipse.jetty.toolchain.test.Sha1Sum;
-import org.eclipse.jetty.toolchain.test.jupiter.WorkDir;
 import org.eclipse.jetty.util.BufferUtil;
 import org.eclipse.jetty.util.Callback;
 import org.eclipse.jetty.util.Fields;
@@ -75,6 +74,7 @@ import org.hamcrest.Matchers;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -96,6 +96,7 @@ import static org.hamcrest.Matchers.startsWith;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.io.CleanupMode.ON_SUCCESS;
 
 public class GzipHandlerTest
 {
@@ -124,7 +125,6 @@ public class GzipHandlerTest
     private static final String CONTENT_ETAG = String.format("W/\"%x\"", CONTENT.hashCode());
     private static final String CONTENT_ETAG_GZIP = String.format("W/\"%x" + CompressedContentFormat.GZIP.getEtagSuffix() + "\"", CONTENT.hashCode());
 
-    public WorkDir _workDir;
     private Server _server;
     private ServerConnector _httpConnector;
     private LocalConnector _connector;
@@ -599,12 +599,12 @@ public class GzipHandlerTest
     }
 
     @Test
-    public void testExcludePaths() throws Exception
+    public void testExcludePaths(@TempDir(cleanup = ON_SUCCESS) Path tmpPath) throws Exception
     {
         _gzipHandler.addIncludedMimeTypes("text/plain");
         _gzipHandler.setExcludedPaths("*.txt");
 
-        Path contextDir = _workDir.getEmptyPathDir().resolve("context");
+        Path contextDir = tmpPath.resolve("context");
         FS.ensureDirExists(contextDir);
 
         _contextHandler.setBaseResourceAsPath(contextDir);
@@ -691,11 +691,11 @@ public class GzipHandlerTest
     }
 
     @Test
-    public void testExcludedMimeTypesUpperCase() throws Exception
+    public void testExcludedMimeTypesUpperCase(@TempDir(cleanup = ON_SUCCESS) Path tmpPath) throws Exception
     {
         _gzipHandler.addExcludedMimeTypes("text/PLAIN");
 
-        Path contextDir = _workDir.getEmptyPathDir().resolve("context");
+        Path contextDir = tmpPath.resolve("context");
         FS.ensureDirExists(contextDir);
 
         _contextHandler.setBaseResourceAsPath(contextDir);
@@ -991,12 +991,12 @@ public class GzipHandlerTest
     }
 
     @Test
-    public void testIncludedExcludePaths() throws Exception
+    public void testIncludedExcludePaths(@TempDir(cleanup = ON_SUCCESS) Path tmpPath) throws Exception
     {
         _gzipHandler.setExcludedPaths("/ctx/bad.txt");
         _gzipHandler.setIncludedPaths("*.txt");
 
-        Path contextDir = _workDir.getEmptyPathDir().resolve("context");
+        Path contextDir = tmpPath.resolve("context");
         FS.ensureDirExists(contextDir);
 
         _contextHandler.setBaseResourceAsPath(contextDir);
@@ -1064,11 +1064,11 @@ public class GzipHandlerTest
     }
 
     @Test
-    public void testIncludedMimeTypes() throws Exception
+    public void testIncludedMimeTypes(@TempDir(cleanup = ON_SUCCESS) Path tmpPath) throws Exception
     {
         _gzipHandler.addIncludedMimeTypes("text/plain");
 
-        Path contextDir = _workDir.getEmptyPathDir().resolve("context");
+        Path contextDir = tmpPath.resolve("context");
         FS.ensureDirExists(contextDir);
 
         _contextHandler.setBaseResourceAsPath(contextDir);
@@ -1121,11 +1121,11 @@ public class GzipHandlerTest
      * </p>
      */
     @Test
-    public void testIncludedMimeTypesPrecompressedByWrappedHandler() throws Exception
+    public void testIncludedMimeTypesPrecompressedByWrappedHandler(@TempDir(cleanup = ON_SUCCESS) Path tmpPath) throws Exception
     {
         _gzipHandler.addIncludedMimeTypes("image/svg+xml");
 
-        Path contextDir = _workDir.getEmptyPathDir().resolve("context");
+        Path contextDir = tmpPath.resolve("context");
         FS.ensureDirExists(contextDir);
 
         _contextHandler.setBaseResourceAsPath(contextDir);
@@ -1281,11 +1281,11 @@ public class GzipHandlerTest
     }
 
     @Test
-    public void testRequestAcceptEncodingWithQuality() throws Exception
+    public void testRequestAcceptEncodingWithQuality(@TempDir(cleanup = ON_SUCCESS) Path tmpPath) throws Exception
     {
         _gzipHandler.addIncludedMimeTypes("text/plain");
 
-        Path contextDir = _workDir.getEmptyPathDir().resolve("context");
+        Path contextDir = tmpPath.resolve("context");
         FS.ensureDirExists(contextDir);
 
         _contextHandler.setBaseResourceAsPath(contextDir);
@@ -1337,11 +1337,11 @@ public class GzipHandlerTest
      * See: <a href="http://bugs.eclipse.org/388072">Bugzilla #388072</a>
      */
     @Test
-    public void testRequestAcceptEncodingWithZeroQuality() throws Exception
+    public void testRequestAcceptEncodingWithZeroQuality(@TempDir(cleanup = ON_SUCCESS) Path tmpPath) throws Exception
     {
         _gzipHandler.addIncludedMimeTypes("text/plain");
 
-        Path contextDir = _workDir.getEmptyPathDir().resolve("context");
+        Path contextDir = tmpPath.resolve("context");
         FS.ensureDirExists(contextDir);
 
         _contextHandler.setBaseResourceAsPath(contextDir);
@@ -1391,11 +1391,11 @@ public class GzipHandlerTest
      */
     @ParameterizedTest
     @MethodSource("compressibleSizesSource")
-    public void testRequestIfModifiedSinceInFutureGzipCompressedResponse(int fileSize) throws Exception
+    public void testRequestIfModifiedSinceInFutureGzipCompressedResponse(int fileSize, @TempDir(cleanup = ON_SUCCESS) Path tmpPath) throws Exception
     {
         _gzipHandler.addIncludedMimeTypes("text/plain");
 
-        Path contextDir = _workDir.getEmptyPathDir().resolve("context");
+        Path contextDir = tmpPath.resolve("context");
         FS.ensureDirExists(contextDir);
 
         _contextHandler.setBaseResourceAsPath(contextDir);
@@ -1441,11 +1441,11 @@ public class GzipHandlerTest
      */
     @ParameterizedTest
     @MethodSource("compressibleSizesSource")
-    public void testRequestIfModifiedSinceInPastGzipCompressedResponse(int fileSize) throws Exception
+    public void testRequestIfModifiedSinceInPastGzipCompressedResponse(int fileSize, @TempDir(cleanup = ON_SUCCESS) Path tmpPath) throws Exception
     {
         _gzipHandler.addIncludedMimeTypes("text/plain");
 
-        Path contextDir = _workDir.getEmptyPathDir().resolve("context");
+        Path contextDir = tmpPath.resolve("context");
         FS.ensureDirExists(contextDir);
 
         _contextHandler.setBaseResourceAsPath(contextDir);
@@ -1522,11 +1522,11 @@ public class GzipHandlerTest
     }
 
     @Test
-    public void testResponseCustomMimeTypeSVG() throws Exception
+    public void testResponseCustomMimeTypeSVG(@TempDir(cleanup = ON_SUCCESS) Path tmpPath) throws Exception
     {
         _gzipHandler.addIncludedMimeTypes("image/svg+xml");
 
-        Path contextDir = _workDir.getEmptyPathDir().resolve("context");
+        Path contextDir = tmpPath.resolve("context");
         FS.ensureDirExists(contextDir);
 
         _contextHandler.setBaseResourceAsPath(contextDir);
@@ -1601,11 +1601,11 @@ public class GzipHandlerTest
 
     @ParameterizedTest
     @MethodSource("compressibleSizesSource")
-    public void testSimpleCompressedResponse(int fileSize) throws Exception
+    public void testSimpleCompressedResponse(int fileSize, @TempDir(cleanup = ON_SUCCESS) Path tmpPath) throws Exception
     {
         _gzipHandler.addIncludedMimeTypes("text/plain");
 
-        Path contextDir = _workDir.getEmptyPathDir().resolve("context");
+        Path contextDir = tmpPath.resolve("context");
         FS.ensureDirExists(contextDir);
 
         _contextHandler.setBaseResourceAsPath(contextDir);
