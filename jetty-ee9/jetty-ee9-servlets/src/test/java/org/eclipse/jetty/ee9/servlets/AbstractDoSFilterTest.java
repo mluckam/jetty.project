@@ -56,7 +56,7 @@ public abstract class AbstractDoSFilterTest
     private ServerConnector _connector;
     protected long _requestMaxTime = 200;
 
-    public void startServer(WorkDir workDir, Class<? extends Filter> filter) throws Exception
+    public void startServer(Path workDir, Class<? extends Filter> filter) throws Exception
     {
         _server = new Server();
         _connector = new ServerConnector(_server);
@@ -66,7 +66,7 @@ public abstract class AbstractDoSFilterTest
         DefaultSessionCache sessionCache = new DefaultSessionCache(context.getSessionHandler().getSessionManager());
         FileSessionDataStore fileStore = new FileSessionDataStore();
 
-        Path p = workDir.getPathFile("sessions");
+        Path p = workDir.resolve("sessions");
         FS.ensureEmpty(p);
         fileStore.setStoreDir(p.toFile());
         sessionCache.setSessionDataStore(fileStore);

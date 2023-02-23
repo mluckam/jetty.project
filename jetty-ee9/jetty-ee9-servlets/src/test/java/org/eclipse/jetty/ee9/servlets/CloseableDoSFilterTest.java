@@ -13,22 +13,23 @@
 
 package org.eclipse.jetty.ee9.servlets;
 
-import org.eclipse.jetty.toolchain.test.jupiter.WorkDir;
-import org.eclipse.jetty.toolchain.test.jupiter.WorkDirExtension;
+import java.nio.file.Path;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.TempDir;
 
-@ExtendWith(WorkDirExtension.class)
+import static org.junit.jupiter.api.io.CleanupMode.ON_SUCCESS;
+
 public class CloseableDoSFilterTest extends AbstractDoSFilterTest
 {
-    public WorkDir workDir;
+    private @TempDir(cleanup = ON_SUCCESS) Path tmpPath;
 
     @BeforeEach
     public void setUp() throws Exception
     {
-        startServer(workDir, CloseableDoSFilter.class);
+        startServer(tmpPath, CloseableDoSFilter.class);
     }
 
     @Override

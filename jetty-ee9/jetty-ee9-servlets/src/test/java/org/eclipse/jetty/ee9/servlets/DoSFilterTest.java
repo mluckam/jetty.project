@@ -13,6 +13,7 @@
 
 package org.eclipse.jetty.ee9.servlets;
 
+import java.nio.file.Path;
 import java.util.Collections;
 import java.util.Enumeration;
 
@@ -22,25 +23,23 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import org.eclipse.jetty.ee9.nested.ContextHandler;
 import org.eclipse.jetty.ee9.servlets.DoSFilter.RateTracker;
-import org.eclipse.jetty.toolchain.test.jupiter.WorkDir;
-import org.eclipse.jetty.toolchain.test.jupiter.WorkDirExtension;
 import org.eclipse.jetty.util.NanoTime;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.TempDir;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.anyOf;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.io.CleanupMode.ON_SUCCESS;
 
-@ExtendWith(WorkDirExtension.class)
 public class DoSFilterTest extends AbstractDoSFilterTest
 {
-    public WorkDir workDir;
+    private @TempDir(cleanup = ON_SUCCESS) Path tmpPath;
 
     private static class RemoteAddressRequest extends org.eclipse.jetty.ee9.nested.Request
     {
@@ -103,7 +102,7 @@ public class DoSFilterTest extends AbstractDoSFilterTest
     @BeforeEach
     public void setUp() throws Exception
     {
-        startServer(workDir, DoSFilter.class);
+        startServer(tmpPath, DoSFilter.class);
     }
 
     // TODO Remove mock request. Use a real one

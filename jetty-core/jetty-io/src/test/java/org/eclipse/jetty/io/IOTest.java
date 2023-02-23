@@ -39,7 +39,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jetty.toolchain.test.FS;
 import org.eclipse.jetty.toolchain.test.jupiter.WorkDir;
-import org.eclipse.jetty.toolchain.test.jupiter.WorkDirExtension;
 import org.eclipse.jetty.util.BufferUtil;
 import org.eclipse.jetty.util.IO;
 import org.eclipse.jetty.util.resource.Resource;
@@ -47,7 +46,7 @@ import org.eclipse.jetty.util.resource.ResourceFactory;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.OS;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.TempDir;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -56,11 +55,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.io.CleanupMode.ON_SUCCESS;
 
-@ExtendWith(WorkDirExtension.class)
 public class IOTest
 {
-    public WorkDir workDir;
 
     @Test
     public void testIO() throws Exception
@@ -428,10 +426,9 @@ public class IOTest
     }
 
     @Test
-    public void testGatherWrite() throws Exception
+    public void testGatherWrite(@TempDir(cleanup = ON_SUCCESS) Path tmpPath) throws Exception
     {
-        Path dir = workDir.getEmptyPathDir();
-        Path file = Files.createTempFile(dir, "test", ".txt");
+        Path file = Files.createTempFile(tmpPath, "test", ".txt");
         FileChannel out = FileChannel.open(file,
             StandardOpenOption.CREATE,
             StandardOpenOption.READ,

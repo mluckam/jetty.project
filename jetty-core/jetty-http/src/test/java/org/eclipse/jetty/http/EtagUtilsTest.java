@@ -19,10 +19,8 @@ import java.nio.file.Path;
 import java.util.stream.Stream;
 
 import org.eclipse.jetty.toolchain.test.FS;
-import org.eclipse.jetty.toolchain.test.jupiter.WorkDir;
-import org.eclipse.jetty.toolchain.test.jupiter.WorkDirExtension;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -34,17 +32,15 @@ import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.startsWith;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.io.CleanupMode.ON_SUCCESS;
 
-@ExtendWith(WorkDirExtension.class)
 public class EtagUtilsTest
 {
-    public WorkDir workDir;
 
     @Test
-    public void testCalcWeakETag() throws IOException
+    public void testCalcWeakETag(@TempDir(cleanup = ON_SUCCESS) Path tmpPath) throws IOException
     {
-        Path root = workDir.getEmptyPathDir();
-        Path testFile = root.resolve("test.dat");
+        Path testFile = tmpPath.resolve("test.dat");
         Files.writeString(testFile, "ABCDEFGHIJKLMNOPQRSTUVWXYZ");
 
         String weakEtag = EtagUtils.computeWeakEtag(testFile);
@@ -53,13 +49,12 @@ public class EtagUtilsTest
     }
 
     @Test
-    public void testCalcWeakETagSameFileDifferentLocations() throws IOException
+    public void testCalcWeakETagSameFileDifferentLocations(@TempDir(cleanup = ON_SUCCESS) Path tmpPath) throws IOException
     {
-        Path root = workDir.getEmptyPathDir();
-        Path testFile = root.resolve("test.dat");
+        Path testFile = tmpPath.resolve("test.dat");
         Files.writeString(testFile, "ABCDEFGHIJKLMNOPQRSTUVWXYZ");
 
-        Path altDir = root.resolve("alt");
+        Path altDir = tmpPath.resolve("alt");
         FS.ensureDirExists(altDir);
         Path altFile = altDir.resolve("test.dat");
         Files.copy(testFile, altFile);

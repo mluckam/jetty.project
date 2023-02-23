@@ -15,19 +15,21 @@ package org.eclipse.jetty.deploy;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jetty.deploy.graph.GraphOutputDot;
 import org.eclipse.jetty.deploy.graph.Node;
 import org.eclipse.jetty.deploy.graph.Route;
-import org.eclipse.jetty.toolchain.test.jupiter.WorkDir;
 import org.eclipse.jetty.toolchain.test.jupiter.WorkDirExtension;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.TempDir;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.io.CleanupMode.ON_SUCCESS;
 
 /**
  * Just an overly picky test case to validate the potential paths.
@@ -35,8 +37,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @ExtendWith(WorkDirExtension.class)
 public class AppLifeCycleTest
 {
-    public WorkDir testdir;
-
     private void assertNoPath(String from, String to)
     {
         assertPath(from, to, new ArrayList<String>());
@@ -169,12 +169,12 @@ public class AppLifeCycleTest
      * @throws IOException on test failure
      */
     @Test
-    public void testFindPathMultiple() throws IOException
+    public void testFindPathMultiple(@TempDir(cleanup = ON_SUCCESS) Path tmpPath) throws IOException
     {
         AppLifeCycle lifecycle = new AppLifeCycle();
         List<String> expected = new ArrayList<String>();
 
-        File outputDir = testdir.getEmptyPathDir().toFile();
+        File outputDir = tmpPath.toFile();
 
         // Modify graph to add new 'staging' -> 'staged' between 'deployed' and 'started'
         GraphOutputDot.write(lifecycle, new File(outputDir, "multiple-1.dot")); // before change

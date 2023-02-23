@@ -15,6 +15,7 @@ package org.eclipse.jetty.ee9.websocket.jakarta.tests.server;
 
 import java.io.IOException;
 import java.net.URI;
+import java.nio.file.Path;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -25,20 +26,18 @@ import jakarta.websocket.OnOpen;
 import jakarta.websocket.server.ServerEndpoint;
 import org.eclipse.jetty.ee9.websocket.jakarta.tests.WSServer;
 import org.eclipse.jetty.ee9.websocket.jakarta.tests.framehandlers.FrameHandlerTracker;
-import org.eclipse.jetty.toolchain.test.jupiter.WorkDir;
-import org.eclipse.jetty.toolchain.test.jupiter.WorkDirExtension;
 import org.eclipse.jetty.util.Callback;
 import org.eclipse.jetty.websocket.core.CoreSession;
 import org.eclipse.jetty.websocket.core.Frame;
 import org.eclipse.jetty.websocket.core.OpCode;
 import org.eclipse.jetty.websocket.core.client.WebSocketCoreClient;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.TempDir;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.io.CleanupMode.ON_SUCCESS;
 
-@ExtendWith(WorkDirExtension.class)
 public class OnMessageReturnTest
 {
     @ServerEndpoint(value = "/echoreturn")
@@ -76,12 +75,10 @@ public class OnMessageReturnTest
         }
     }
 
-    public WorkDir testdir;
-
     @Test
-    public void testEchoReturn() throws Exception
+    public void testEchoReturn(@TempDir(cleanup = ON_SUCCESS) Path tmpPath) throws Exception
     {
-        WSServer wsb = new WSServer(testdir.getPath());
+        WSServer wsb = new WSServer(tmpPath);
         WSServer.WebApp app = wsb.createWebApp("app");
         app.copyWebInf("empty-web.xml");
         app.copyClass(EchoReturnEndpoint.class);
