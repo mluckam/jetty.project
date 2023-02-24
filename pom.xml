@@ -94,8 +94,8 @@
     <jetty.perf-helper.version>1.0.7</jetty.perf-helper.version>
     <jetty-quiche-native.version>0.16.0</jetty-quiche-native.version>
     <jetty-test-policy.version>1.2</jetty-test-policy.version>
-    <jetty.test.version>6.0</jetty.test.version>
-<!--    <jetty.test.version>6.0.parallel-SNAPSHOT</jetty.test.version>-->
+<!--    <jetty.test.version>6.0</jetty.test.version>-->
+    <jetty.test.version>6.0.parallel-SNAPSHOT</jetty.test.version>
     <jetty.xhtml.schemas-version>1.1</jetty.xhtml.schemas-version>
     <jmh.version>1.36</jmh.version>
     <jna.version>5.13.0</jna.version>
@@ -766,7 +766,7 @@
             <!-- order can be different depending on os jvm so let's force it -->
             <runOrder>alphabetical</runOrder>
             <systemPropertyVariables>
-              <java.io.tmpdir>${project.build.directory}/tmp</java.io.tmpdir>
+              <java.io.tmpdir>${project.build.directory}</java.io.tmpdir>
               <jetty.unixdomain.dir>${jetty.unixdomain.dir}</jetty.unixdomain.dir>
               <jetty.testtracker.log>${jetty.testtracker.log}</jetty.testtracker.log>
             </systemPropertyVariables>
