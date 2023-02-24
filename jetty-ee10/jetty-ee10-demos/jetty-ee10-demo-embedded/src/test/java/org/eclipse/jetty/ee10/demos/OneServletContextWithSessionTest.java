@@ -30,6 +30,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.CleanupMode;
+import org.junit.jupiter.api.io.TempDir;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -37,18 +39,17 @@ import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 
-@ExtendWith(WorkDirExtension.class)
 public class OneServletContextWithSessionTest extends AbstractEmbeddedTest
 {
     private static final String TEXT_CONTENT = "Do the right thing. It will gratify some people and astonish the rest. - Mark Twain";
-    public WorkDir workDir;
     private Server server;
+
+    @TempDir(cleanup = CleanupMode.ON_SUCCESS)
+    private Path baseDir;
 
     @BeforeEach
     public void startServer() throws Exception
     {
-        Path baseDir = workDir.getEmptyPathDir();
-
         Path textFile = baseDir.resolve("simple.txt");
         try (BufferedWriter writer = Files.newBufferedWriter(textFile, UTF_8))
         {
