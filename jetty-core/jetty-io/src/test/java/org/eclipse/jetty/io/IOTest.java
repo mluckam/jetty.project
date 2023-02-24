@@ -32,6 +32,7 @@ import java.nio.channels.SocketChannel;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Future;
@@ -54,6 +55,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.io.CleanupMode.ALWAYS;
 import static org.junit.jupiter.api.io.CleanupMode.ON_SUCCESS;
 
 public class IOTest
@@ -593,4 +595,18 @@ public class IOTest
         assertFalse(Files.isSymbolicLink(realPath));
         assertFalse(Files.isSymbolicLink(linkPath));
     }
+
+    @Test
+    public void foo(@TempDir(cleanup = ALWAYS) Path path) throws Exception
+    {
+        System.out.println("foo test");
+        System.out.println("java.io.tmpdir:" + System.getProperty("java.io.tmpdir"));
+        //System.setProperty("java.io.tmpdir", "target");
+        System.out.println("Files.createTempDirectory(\"foo\").toString(): " +
+                Files.createTempDirectory("foo").toString());
+        System.out.println("Path from @TempDir: " +  path.toString());
+        System.out.println("Files.createTempDirectory(Paths.get(System.getProperty(\"java.io.tmpdir\")), \"foo\").toString()" +
+                Files.createTempDirectory(Paths.get(System.getProperty("java.io.tmpdir")), "foo").toString());
+    }
+
 }
