@@ -41,6 +41,7 @@ public class EtagUtilsTest
     public void testCalcWeakETag(@TempDir(cleanup = ON_SUCCESS) Path tmpPath) throws IOException
     {
         Path testFile = tmpPath.resolve("test.dat");
+        System.out.println("testFile" + testFile.toString());
         Files.writeString(testFile, "ABCDEFGHIJKLMNOPQRSTUVWXYZ");
 
         String weakEtag = EtagUtils.computeWeakEtag(testFile);
