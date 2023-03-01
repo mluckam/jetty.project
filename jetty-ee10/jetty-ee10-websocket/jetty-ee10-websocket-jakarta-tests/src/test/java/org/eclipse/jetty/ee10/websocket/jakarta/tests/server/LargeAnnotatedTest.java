@@ -15,6 +15,7 @@ package org.eclipse.jetty.ee10.websocket.jakarta.tests.server;
 
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -23,15 +24,14 @@ import jakarta.websocket.OnMessage;
 import jakarta.websocket.server.ServerEndpoint;
 import org.eclipse.jetty.ee10.websocket.jakarta.tests.WSServer;
 import org.eclipse.jetty.ee10.websocket.jakarta.tests.framehandlers.FrameHandlerTracker;
-import org.eclipse.jetty.toolchain.test.jupiter.WorkDir;
-import org.eclipse.jetty.toolchain.test.jupiter.WorkDirExtension;
 import org.eclipse.jetty.util.Callback;
 import org.eclipse.jetty.websocket.core.CoreSession;
 import org.eclipse.jetty.websocket.core.Frame;
 import org.eclipse.jetty.websocket.core.OpCode;
 import org.eclipse.jetty.websocket.core.client.WebSocketCoreClient;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.CleanupMode;
+import org.junit.jupiter.api.io.TempDir;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -39,7 +39,6 @@ import static org.hamcrest.Matchers.is;
 /**
  * Test Echo of Large messages, targeting the {@link jakarta.websocket.Session#setMaxTextMessageBufferSize(int)} functionality
  */
-@ExtendWith(WorkDirExtension.class)
 public class LargeAnnotatedTest
 {
     @ServerEndpoint(value = "/echo/large")
@@ -52,12 +51,13 @@ public class LargeAnnotatedTest
         }
     }
 
-    public WorkDir testdir;
+    @TempDir(cleanup = CleanupMode.ON_SUCCESS)
+    public Path testdir;
 
     @Test
     public void testEcho() throws Exception
     {
-        WSServer wsb = new WSServer(testdir.getPath());
+        WSServer wsb = new WSServer(testdir);
         WSServer.WebApp app = wsb.createWebApp("app");
         app.createWebInf();
         app.copyClass(LargeEchoConfiguredSocket.class);
