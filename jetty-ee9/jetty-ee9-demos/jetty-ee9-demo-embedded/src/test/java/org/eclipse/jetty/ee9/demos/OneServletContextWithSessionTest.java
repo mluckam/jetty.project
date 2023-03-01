@@ -23,13 +23,13 @@ import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.toolchain.test.jupiter.WorkDir;
-import org.eclipse.jetty.toolchain.test.jupiter.WorkDirExtension;
+
 import org.eclipse.jetty.util.resource.ResourceFactory;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.CleanupMode;
+import org.junit.jupiter.api.io.TempDir;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -37,18 +37,16 @@ import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 
-@ExtendWith(WorkDirExtension.class)
 public class OneServletContextWithSessionTest extends AbstractEmbeddedTest
 {
     private static final String TEXT_CONTENT = "Do the right thing. It will gratify some people and astonish the rest. - Mark Twain";
-    public WorkDir workDir;
+    @TempDir(cleanup = CleanupMode.ON_SUCCESS)
+    private Path baseDir;
     private Server server;
 
     @BeforeEach
     public void startServer() throws Exception
     {
-        Path baseDir = workDir.getEmptyPathDir();
-
         Path textFile = baseDir.resolve("simple.txt");
         try (BufferedWriter writer = Files.newBufferedWriter(textFile, UTF_8))
         {
