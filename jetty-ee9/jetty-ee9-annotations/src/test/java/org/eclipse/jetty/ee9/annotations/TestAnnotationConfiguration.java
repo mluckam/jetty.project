@@ -27,13 +27,14 @@ import org.eclipse.jetty.toolchain.test.FS;
 import org.eclipse.jetty.toolchain.test.JAR;
 import org.eclipse.jetty.toolchain.test.MavenPaths;
 import org.eclipse.jetty.toolchain.test.MavenTestingUtils;
-import org.eclipse.jetty.toolchain.test.jupiter.WorkDir;
 import org.eclipse.jetty.util.resource.FileSystemPool;
 import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.util.resource.ResourceFactory;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.CleanupMode;
+import org.junit.jupiter.api.io.TempDir;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
@@ -57,7 +58,6 @@ public class TestAnnotationConfiguration
         }
     }
 
-    public WorkDir workDir;
     public Path web25;
     public Path web31false;
     public Path web31true;
@@ -65,6 +65,7 @@ public class TestAnnotationConfiguration
     public Path testSciJar;
     public Path testContainerSciJar;
     public Path testWebInfClassesJar;
+    @TempDir(cleanup = CleanupMode.ON_SUCCESS)
     public Path unpacked;
     public URLClassLoader containerLoader;
     public URLClassLoader webAppLoader;
@@ -93,7 +94,6 @@ public class TestAnnotationConfiguration
         testWebInfClassesJar = jarDir.resolve("test-sci-for-webinf.jar");
 
         // unpack some classes to pretend that are in WEB-INF/classes
-        unpacked = workDir.getEmptyPathDir();
         FS.cleanDirectory(unpacked);
         JAR.unpack(testWebInfClassesJar.toFile(), unpacked.toFile());
         webInfClasses = ResourceFactory.root().newResource(unpacked);
