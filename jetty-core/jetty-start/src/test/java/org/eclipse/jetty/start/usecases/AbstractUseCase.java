@@ -39,18 +39,16 @@ import org.eclipse.jetty.start.Props;
 import org.eclipse.jetty.start.StartArgs;
 import org.eclipse.jetty.start.StartLog;
 import org.eclipse.jetty.toolchain.test.FS;
-import org.eclipse.jetty.toolchain.test.jupiter.WorkDir;
-import org.eclipse.jetty.toolchain.test.jupiter.WorkDirExtension;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.CleanupMode;
+import org.junit.jupiter.api.io.TempDir;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@ExtendWith(WorkDirExtension.class)
 public abstract class AbstractUseCase
 {
-    public WorkDir workDir;
+    public @TempDir(cleanup = CleanupMode.ON_SUCCESS) Path testdir;
 
     protected Path homeDir;
     protected Path baseDir;
@@ -65,8 +63,6 @@ public abstract class AbstractUseCase
     @BeforeEach
     public void setupTest() throws IOException
     {
-        Path testdir = workDir.getEmptyPathDir();
-
         // Create empty base directory for testcase to use
         baseDir = testdir.resolve("test-base");
         FS.ensureDirExists(baseDir);

@@ -374,7 +374,7 @@ public class BasicTest extends AbstractUseCase
     @Test
     public void testHomeWithSpaces() throws Exception
     {
-        homeDir = workDir.getPath().resolve("jetty home with spaces");
+        homeDir = testdir.resolve("jetty home with spaces");
         FS.ensureDirExists(homeDir);
 
         setupDistHome();
