@@ -28,7 +28,6 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.jetty.io.Content;
-import org.eclipse.jetty.io.Retainable;
 import org.eclipse.jetty.util.IO;
 import org.eclipse.jetty.util.QuotedStringTokenizer;
 import org.eclipse.jetty.util.thread.AutoLock;
@@ -164,12 +163,7 @@ public class MultiPartFormData extends CompletableFuture<MultiPartFormData.Parts
      */
     public Charset getDefaultCharset()
     {
-        return getParts().stream()
-            .filter(part -> "_charset_".equals(part.getName()))
-            .map(part -> part.getContentAsString(US_ASCII))
-            .map(Charset::forName)
-            .findFirst()
-            .orElse(null);
+        return listener.getDefaultCharset();
     }
 
     /**
@@ -299,9 +293,9 @@ public class MultiPartFormData extends CompletableFuture<MultiPartFormData.Parts
     }
 
     // Only used for testing.
-    List<MultiPart.Part> getParts()
+    int getPartsSize()
     {
-        return listener.getParts();
+        return listener.getPartsSize();
     }
 
     /**
@@ -435,7 +429,13 @@ public class MultiPartFormData extends CompletableFuture<MultiPartFormData.Parts
             if (fileName != null || isUseFilesForPartsWithoutFileName())
             {
                 long maxFileSize = getMaxFileSize();
-                fileSize += buffer.remaining();
+                long fileSize;
+                try (AutoLock ignored = lock.lock())
+                {
+                    fileSize = this.fileSize;
+                    fileSize += buffer.remaining();
+                    this.fileSize = fileSize;
+                }
                 if (maxFileSize >= 0 && fileSize > maxFileSize)
                 {
                     onFailure(new IllegalStateException("max file size exceeded: %d".formatted(maxFileSize)));
@@ -445,7 +445,13 @@ public class MultiPartFormData extends CompletableFuture<MultiPartFormData.Parts
                 long maxMemoryFileSize = getMaxMemoryFileSize();
                 if (maxMemoryFileSize >= 0)
                 {
-                    memoryFileSize += buffer.remaining();
+                    long memoryFileSize;
+                    try (AutoLock ignored = lock.lock())
+                    {
+                        memoryFileSize = this.memoryFileSize;
+                        memoryFileSize += buffer.remaining();
+                        this.memoryFileSize = memoryFileSize;
+                    }
                     if (memoryFileSize > maxMemoryFileSize)
                     {
                         try
@@ -454,6 +460,11 @@ public class MultiPartFormData extends CompletableFuture<MultiPartFormData.Parts
                             if (ensureFileChannel())
                             {
                                 // Write existing memory chunks.
+                                List<Content.Chunk> partChunks;
+                                try (AutoLock ignored = lock.lock())
+                                {
+                                    partChunks = List.copyOf(this.partChunks);
+                                }
                                 for (Content.Chunk c : partChunks)
                                 {
                                     write(c.getByteBuffer());
@@ -468,15 +479,21 @@ public class MultiPartFormData extends CompletableFuture<MultiPartFormData.Parts
                             onFailure(x);
                         }
 
-                        partChunks.forEach(Content.Chunk::release);
-                        partChunks.clear();
+                        try (AutoLock ignored = lock.lock())
+                        {
+                            partChunks.forEach(Content.Chunk::release);
+                            partChunks.clear();
+                        }
                         return;
                     }
                 }
             }
             // Retain the chunk because it is stored for later use.
             chunk.retain();
-            partChunks.add(chunk);
+            try (AutoLock ignored = lock.lock())
+            {
+                partChunks.add(chunk);
+            }
         }
 
         private void write(ByteBuffer buffer) throws Exception
@@ -484,16 +501,19 @@ public class MultiPartFormData extends CompletableFuture<MultiPartFormData.Parts
             int remaining = buffer.remaining();
             while (remaining > 0)
             {
-                int written = fileChannel.write(buffer);
-                if (written == 0)
-                    throw new NonWritableChannelException();
-                remaining -= written;
+                try (AutoLock ignored = lock.lock())
+                {
+                    int written = fileChannel.write(buffer);
+                    if (written == 0)
+                        throw new NonWritableChannelException();
+                    remaining -= written;
+                }
             }
         }
 
         private void close()
         {
-            try
+            try (AutoLock ignored = lock.lock())
             {
                 Closeable closeable = fileChannel;
                 if (closeable != null)
@@ -508,21 +528,21 @@ public class MultiPartFormData extends CompletableFuture<MultiPartFormData.Parts
         @Override
         public void onPart(String name, String fileName, HttpFields headers)
         {
-            MultiPart.Part part;
-            if (fileChannel != null)
-                part = new MultiPart.PathPart(name, fileName, headers, filePath);
-            else
-                part = new MultiPart.ChunksPart(name, fileName, headers, List.copyOf(partChunks));
-            // Reset part-related state.
-            fileSize = 0;
-            memoryFileSize = 0;
-            filePath = null;
-            fileChannel = null;
-            partChunks.forEach(Content.Chunk::release);
-            partChunks.clear();
-            // Store the new part.
             try (AutoLock ignored = lock.lock())
             {
+                MultiPart.Part part;
+                if (fileChannel != null)
+                    part = new MultiPart.PathPart(name, fileName, headers, filePath);
+                else
+                    part = new MultiPart.ChunksPart(name, fileName, headers, List.copyOf(partChunks));
+                // Reset part-related state.
+                fileSize = 0;
+                memoryFileSize = 0;
+                filePath = null;
+                fileChannel = null;
+                partChunks.forEach(Content.Chunk::release);
+                partChunks.clear();
+                // Store the new part.
                 parts.add(part);
             }
         }
@@ -531,14 +551,32 @@ public class MultiPartFormData extends CompletableFuture<MultiPartFormData.Parts
         public void onComplete()
         {
             super.onComplete();
-            complete(new Parts(getParts()));
+            List<MultiPart.Part> result;
+            try (AutoLock ignored = lock.lock())
+            {
+                result = List.copyOf(parts);
+            }
+            complete(new Parts(result));
         }
 
-        private List<MultiPart.Part> getParts()
+        Charset getDefaultCharset()
         {
             try (AutoLock ignored = lock.lock())
             {
-                return List.copyOf(parts);
+                return parts.stream()
+                    .filter(part -> "_charset_".equals(part.getName()))
+                    .map(part -> part.getContentAsString(US_ASCII))
+                    .map(Charset::forName)
+                    .findFirst()
+                    .orElse(null);
+            }
+        }
+
+        int getPartsSize()
+        {
+            try (AutoLock ignored = lock.lock())
+            {
+                return parts.size();
             }
         }
 
@@ -552,28 +590,26 @@ public class MultiPartFormData extends CompletableFuture<MultiPartFormData.Parts
         private void fail(Throwable cause)
         {
             List<MultiPart.Part> partsToFail;
-            List<Content.Chunk> partChunksToFail;
             try (AutoLock ignored = lock.lock())
             {
                 if (failure != null)
                     return;
                 failure = cause;
-                partsToFail = new ArrayList<>(parts);
+                partsToFail = List.copyOf(parts);
                 parts.clear();
-                partChunksToFail = new ArrayList<>(partChunks);
+                partChunks.forEach(Content.Chunk::release);
                 partChunks.clear();
             }
             partsToFail.forEach(p -> p.fail(cause));
-            partChunksToFail.forEach(Retainable::release);
             close();
             delete();
         }
 
         private void delete()
         {
-            try
+            try (AutoLock ignored = lock.lock())
             {
-                if (fileChannel != null)
+                if (filePath != null)
                     Files.delete(filePath);
                 filePath = null;
                 fileChannel = null;
@@ -595,15 +631,18 @@ public class MultiPartFormData extends CompletableFuture<MultiPartFormData.Parts
 
         private boolean ensureFileChannel()
         {
-            if (fileChannel != null)
-                return false;
-            createFileChannel();
-            return true;
+            try (AutoLock ignored = lock.lock())
+            {
+                if (fileChannel != null)
+                    return false;
+                createFileChannel();
+                return true;
+            }
         }
 
         private void createFileChannel()
         {
-            try
+            try (AutoLock ignored = lock.lock())
             {
                 Path directory = getFilesDirectory();
                 Files.createDirectories(directory);

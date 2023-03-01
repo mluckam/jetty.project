@@ -126,9 +126,10 @@ public class MultiPart
         private final String name;
         private final String fileName;
         private final HttpFields fields;
-        private Content.Source contentSource;
         private Path path;
-        private boolean temporary = true;
+        private final AutoLock lock = new AutoLock();
+        private Content.Source contentSource;
+        private boolean temporary;
 
         public Part(String name, String fileName, HttpFields fields)
         {
@@ -141,6 +142,10 @@ public class MultiPart
             this.fileName = fileName;
             this.fields = fields != null ? fields : HttpFields.EMPTY;
             this.path = path;
+            try (AutoLock ignored = lock.lock())
+            {
+                this.temporary = true;
+            }
         }
 
         private Path getPath()
@@ -189,9 +194,12 @@ public class MultiPart
          */
         public Content.Source getContentSource()
         {
-            if (contentSource == null)
-                contentSource = newContentSource();
-            return contentSource;
+            try (AutoLock ignored = lock.lock())
+            {
+                if (contentSource == null)
+                    contentSource = newContentSource();
+                return contentSource;
+            }
         }
 
         /**
@@ -267,18 +275,21 @@ public class MultiPart
                     IO.copy(Content.Source.asInputStream(newContentSource()), out);
                 }
                 this.path = path;
-                this.temporary = false;
             }
             else
             {
                 this.path = Files.move(this.path, path, StandardCopyOption.REPLACE_EXISTING);
+            }
+
+            try (AutoLock ignored = lock.lock())
+            {
                 this.temporary = false;
             }
         }
 
         public void delete() throws IOException
         {
-            if (this.path != null)
+            if (this.path != null && Files.exists(this.path))
                 Files.delete(this.path);
         }
 
@@ -293,8 +304,11 @@ public class MultiPart
             try
             {
                 getContentSource().fail(t);
-                if (temporary)
-                    delete();
+                try (AutoLock ignored = lock.lock())
+                {
+                    if (temporary)
+                        delete();
+                }
             }
             catch (Throwable x)
             {
@@ -347,15 +361,18 @@ public class MultiPart
      */
     public static class ChunksPart extends Part
     {
-        private final List<Content.Chunk> content;
-        private final List<Content.Source> contentSources = new ArrayList<>();
         private final AutoLock lock = new AutoLock();
+        private final List<Content.Chunk> content = new ArrayList<>();
+        private final List<Content.Source> contentSources = new ArrayList<>();
         private boolean closed = false;
 
         public ChunksPart(String name, String fileName, HttpFields fields, List<Content.Chunk> content)
         {
             super(name, fileName, fields);
-            this.content = Objects.requireNonNull(content);
+            try (AutoLock l = lock.lock())
+            {
+                this.content.addAll(content);
+            }
             content.forEach(Content.Chunk::retain);
         }
 
@@ -366,12 +383,32 @@ public class MultiPart
             {
                 if (closed)
                     return null;
-                ChunksContentSource newContentSource = new ChunksContentSource(content.stream()
+                // Slice the chunks as new instances with separate reference counters,
+                // because the content sources may not be read, or their chunks could be
+                // further retained, so those chunks must not be linked to the original ones.
+                List<Content.Chunk> chunks = content.stream()
                     .map(chunk -> Content.Chunk.from(chunk.getByteBuffer().slice(), chunk.isLast()))
-                    .toList());
+                    .toList();
+                ChunksContentSource newContentSource = new ChunksContentSource(chunks);
+                chunks.forEach(Content.Chunk::release);
                 contentSources.add(newContentSource);
                 return newContentSource;
             }
+        }
+
+        @Override
+        public void fail(Throwable t)
+        {
+            List<Content.Source> contentSourcesToFail;
+            try (AutoLock l = lock.lock())
+            {
+                content.forEach(Content.Chunk::release);
+                content.clear();
+                contentSourcesToFail = List.copyOf(contentSources);
+                contentSources.clear();
+            }
+            contentSourcesToFail.forEach(c -> c.fail(t));
+            super.fail(t);
         }
 
         @Override
@@ -380,16 +417,19 @@ public class MultiPart
             List<Content.Source> contentSourcesToFail = null;
             try (AutoLock l = lock.lock())
             {
+                if (closed)
+                    return;
                 closed = true;
                 if (!contentSources.isEmpty())
                 {
-                    contentSourcesToFail = new ArrayList<>(contentSources);
+                    contentSourcesToFail = List.copyOf(contentSources);
                     contentSources.clear();
                 }
+                content.forEach(Content.Chunk::release);
+                content.clear();
             }
 
             super.close();
-            content.forEach(Content.Chunk::release);
             if (contentSourcesToFail != null)
                 contentSourcesToFail.forEach(cs -> cs.fail(CLOSE_EXCEPTION));
         }
