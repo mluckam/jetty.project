@@ -25,27 +25,25 @@ import org.eclipse.jetty.start.config.ConfigSources;
 import org.eclipse.jetty.start.config.JettyBaseConfigSource;
 import org.eclipse.jetty.start.config.JettyHomeConfigSource;
 import org.eclipse.jetty.toolchain.test.MavenTestingUtils;
-import org.eclipse.jetty.toolchain.test.jupiter.WorkDir;
-import org.eclipse.jetty.toolchain.test.jupiter.WorkDirExtension;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.CleanupMode;
+import org.junit.jupiter.api.io.TempDir;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertTimeout;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@ExtendWith(WorkDirExtension.class)
 public class ModuleGraphWriterTest
 {
-    public WorkDir testdir;
+    @TempDir(cleanup = CleanupMode.ON_SUCCESS)
+    public Path baseDir;
 
     @Test
     public void testGenerateNothingEnabled() throws IOException
     {
         // Test Env
         Path homeDir = MavenTestingUtils.getTestResourcePathDir("dist-home");
-        Path baseDir = testdir.getEmptyPathDir();
         String[] cmdLine = new String[]{"jetty.version=TEST"};
 
         // Configuration
@@ -75,7 +73,7 @@ public class ModuleGraphWriterTest
         {
             if (execDotCmd("dot", "-V"))
             {
-                Path outputPng = testdir.getPath().resolve("output.png");
+                Path outputPng = baseDir.resolve("output.png");
                 assertTrue(execDotCmd("dot", "-Tpng", "-o" + outputPng, dotFile.toString()));
 
                 assertThat("PNG File does not exist", FS.exists(outputPng));
