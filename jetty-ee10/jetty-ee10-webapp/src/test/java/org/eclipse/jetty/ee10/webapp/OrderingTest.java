@@ -19,15 +19,14 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.jetty.toolchain.test.jupiter.WorkDir;
-import org.eclipse.jetty.toolchain.test.jupiter.WorkDirExtension;
 import org.eclipse.jetty.util.resource.FileSystemPool;
 import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.util.resource.ResourceFactory;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.CleanupMode;
+import org.junit.jupiter.api.io.TempDir;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
@@ -39,14 +38,14 @@ import static org.junit.jupiter.api.Assertions.fail;
 /**
  * OrderingTest
  */
-@ExtendWith(WorkDirExtension.class)
 public class OrderingTest
 {
-    WorkDir workDir;
+    @TempDir(cleanup = CleanupMode.ON_SUCCESS)
+    Path workDir;
 
     private Resource newTestableDirResource(String name) throws IOException
     {
-        Path dir = workDir.getPath().resolve(name);
+        Path dir = workDir.resolve(name);
         if (!Files.exists(dir))
             Files.createDirectories(dir);
         return ResourceFactory.root().newResource(dir);
@@ -54,7 +53,7 @@ public class OrderingTest
 
     private Resource newTestableFileResource(String name) throws IOException
     {
-        Path file = workDir.getPath().resolve(name);
+        Path file = workDir.resolve(name);
         if (!Files.exists(file))
             Files.createFile(file);
         return ResourceFactory.root().newResource(file);
@@ -64,7 +63,6 @@ public class OrderingTest
     public void beforeEach()
     {
         // ensure work dir exists, and is empty
-        workDir.getEmptyPathDir();
         assertThat(FileSystemPool.INSTANCE.mounts(), empty());
     }
 
