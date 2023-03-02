@@ -26,23 +26,28 @@ import org.eclipse.jetty.toolchain.test.jupiter.WorkDir;
 import org.eclipse.jetty.toolchain.test.jupiter.WorkDirExtension;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.CleanupMode;
+import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.api.parallel.ResourceLock;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.parallel.ResourceAccessMode.READ_WRITE;
+import static org.junit.jupiter.api.parallel.Resources.SYSTEM_PROPERTIES;
 
-@ExtendWith(WorkDirExtension.class)
 public class ModuleTest
 {
-    public WorkDir testdir;
+    @TempDir(cleanup = CleanupMode.ON_SUCCESS)
+    public Path baseDir;
 
     @Test
+    @ResourceLock(value = SYSTEM_PROPERTIES, mode = READ_WRITE)
     public void testLoadMain() throws IOException
     {
         // Test Env
         Path homeDir = MavenTestingUtils.getTestResourcePathDir("dist-home");
-        Path baseDir = testdir.getEmptyPathDir();
         String[] cmdLine = new String[]{"jetty.version=TEST"};
 
         // Configuration

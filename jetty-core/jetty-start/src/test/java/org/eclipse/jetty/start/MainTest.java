@@ -28,6 +28,7 @@ import org.eclipse.jetty.toolchain.test.MavenPaths;
 import org.eclipse.jetty.toolchain.test.MavenTestingUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.ResourceLock;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
@@ -35,6 +36,8 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.parallel.ResourceAccessMode.READ_WRITE;
+import static org.junit.jupiter.api.parallel.Resources.SYSTEM_PROPERTIES;
 
 public class MainTest
 {
@@ -46,6 +49,7 @@ public class MainTest
     }
 
     @Test
+    @ResourceLock(value = SYSTEM_PROPERTIES, mode = READ_WRITE)
     public void testStopProcessing() throws Exception
     {
         List<String> cmdLineArgs = new ArrayList<>();
@@ -64,6 +68,7 @@ public class MainTest
     }
 
     @Test
+    @ResourceLock(value = SYSTEM_PROPERTIES, mode = READ_WRITE)
     public void testListConfig() throws Exception
     {
         List<String> cmdLineArgs = new ArrayList<>();
@@ -96,6 +101,7 @@ public class MainTest
     }
 
     @Test
+    @ResourceLock(value = SYSTEM_PROPERTIES, mode = READ_WRITE)
     public void testUnknownDistroCommand() throws Exception
     {
         List<String> cmdLineArgs = new ArrayList<>();
@@ -147,6 +153,7 @@ public class MainTest
      * A test to ensure that the usage text is still present and not accidentally deleted.
      */
     @Test
+    @ResourceLock(value = SYSTEM_PROPERTIES, mode = READ_WRITE)
     public void testUsageHelpStillThere() throws Exception
     {
         Path usageFile = MavenPaths.findMainResourceFile("org/eclipse/jetty/start/usage.txt");
@@ -155,6 +162,7 @@ public class MainTest
     }
 
     @Test
+    @ResourceLock(value = SYSTEM_PROPERTIES, mode = READ_WRITE)
     public void testJvmArgExpansion() throws Exception
     {
         List<String> cmdLineArgs = new ArrayList<>();

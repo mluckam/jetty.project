@@ -26,6 +26,7 @@ import org.eclipse.jetty.start.config.JettyHomeConfigSource;
 import org.eclipse.jetty.toolchain.test.MavenTestingUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.api.parallel.ResourceLock;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
@@ -34,12 +35,15 @@ import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.io.CleanupMode.ON_SUCCESS;
+import static org.junit.jupiter.api.parallel.ResourceAccessMode.READ_WRITE;
+import static org.junit.jupiter.api.parallel.Resources.SYSTEM_PROPERTIES;
 
 public class ModulesTest
 {
     private static final String TEST_SOURCE = "<test>";
 
     @Test
+    @ResourceLock(value = SYSTEM_PROPERTIES, mode = READ_WRITE)
     public void testLoadAllModules(@TempDir(cleanup = ON_SUCCESS) Path baseDir) throws IOException
     {
         // Test Env
@@ -96,6 +100,7 @@ public class ModulesTest
      * @throws IOException on test failures
      */
     @Test
+    @ResourceLock(value = SYSTEM_PROPERTIES, mode = READ_WRITE)
     public void testLoadShallowModulesOnly() throws IOException
     {
         // Test Env
@@ -135,6 +140,7 @@ public class ModulesTest
     }
 
     @Test
+    @ResourceLock(value = SYSTEM_PROPERTIES, mode = READ_WRITE)
     public void testResolveServerHttp(@TempDir(cleanup = ON_SUCCESS) Path baseDir) throws IOException
     {
         // Test Env
@@ -197,6 +203,7 @@ public class ModulesTest
     }
 
     @Test
+    @ResourceLock(value = SYSTEM_PROPERTIES, mode = READ_WRITE)
     public void testResolveNotRequiredModuleNotFound(@TempDir(cleanup = ON_SUCCESS) Path baseDir) throws IOException
     {
         // Test Env
@@ -245,6 +252,7 @@ public class ModulesTest
     }
 
     @Test
+    @ResourceLock(value = SYSTEM_PROPERTIES, mode = READ_WRITE)
     public void testResolveNotRequiredModuleFound(@TempDir(cleanup = ON_SUCCESS) Path baseDir) throws IOException
     {
         // Test Env
@@ -295,6 +303,7 @@ public class ModulesTest
     }
 
     @Test
+    @ResourceLock(value = SYSTEM_PROPERTIES, mode = READ_WRITE)
     public void testResolveNotRequiredModuleFoundDynamic(@TempDir(cleanup = ON_SUCCESS) Path baseDir) throws IOException
     {
         // Test Env

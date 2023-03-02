@@ -31,6 +31,9 @@ import org.eclipse.jetty.toolchain.test.FS;
 import org.eclipse.jetty.toolchain.test.MavenTestingUtils;
 import org.eclipse.jetty.toolchain.test.PathAssert;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
+import org.junit.jupiter.api.parallel.ResourceLock;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
@@ -41,6 +44,8 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.startsWith;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.parallel.ResourceAccessMode.READ_WRITE;
+import static org.junit.jupiter.api.parallel.Resources.SYSTEM_PROPERTIES;
 
 public class BasicTest extends AbstractUseCase
 {
@@ -56,6 +61,7 @@ public class BasicTest extends AbstractUseCase
     }
 
     @Test
+    @ResourceLock(value = SYSTEM_PROPERTIES, mode = READ_WRITE)
     public void testBasicProcessing() throws Exception
     {
         setupDistHome();
@@ -114,6 +120,7 @@ public class BasicTest extends AbstractUseCase
     }
 
     @Test
+    @ResourceLock(value = SYSTEM_PROPERTIES, mode = READ_WRITE)
     public void testAddModuleDoesNotExist() throws Exception
     {
         setupDistHome();
@@ -140,6 +147,7 @@ public class BasicTest extends AbstractUseCase
     }
 
     @Test
+    @ResourceLock(value = SYSTEM_PROPERTIES, mode = READ_WRITE)
     public void testAddModuleDoesNotExistMultiple() throws Exception
     {
         setupDistHome();
@@ -167,6 +175,7 @@ public class BasicTest extends AbstractUseCase
     }
 
     @Test
+    @ResourceLock(value = SYSTEM_PROPERTIES, mode = READ_WRITE)
     public void testProvidersUsingDefault() throws Exception
     {
         Path homePath = MavenTestingUtils.getTestResourcePathDir("providers-home");
@@ -203,6 +212,7 @@ public class BasicTest extends AbstractUseCase
     }
 
     @Test
+    @ResourceLock(value = SYSTEM_PROPERTIES, mode = READ_WRITE)
     public void testProvidersUsingSpecific() throws Exception
     {
         Path homePath = MavenTestingUtils.getTestResourcePathDir("providers-home");
@@ -240,6 +250,7 @@ public class BasicTest extends AbstractUseCase
     }
 
     @Test
+    @ResourceLock(value = SYSTEM_PROPERTIES, mode = READ_WRITE)
     public void testWithCommandLine() throws Exception
     {
         setupDistHome();
@@ -317,6 +328,7 @@ public class BasicTest extends AbstractUseCase
     }
 
     @Test
+    @ResourceLock(value = SYSTEM_PROPERTIES, mode = READ_WRITE)
     public void testWithModulesFromCommandLine() throws Exception
     {
         setupDistHome();
@@ -372,6 +384,7 @@ public class BasicTest extends AbstractUseCase
     }
 
     @Test
+    @ResourceLock(value = SYSTEM_PROPERTIES, mode = READ_WRITE)
     public void testHomeWithSpaces() throws Exception
     {
         homeDir = testdir.resolve("jetty home with spaces");
