@@ -22,7 +22,9 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.toolchain.test.FS;
 import org.eclipse.jetty.toolchain.test.PathMatchers;
 import org.eclipse.jetty.util.resource.FileSystemPool;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.CleanupMode;
@@ -37,13 +39,13 @@ import static org.hamcrest.Matchers.is;
 public class TempDirTest
 {
 
-    @BeforeEach
+    @BeforeAll
     public void before()
     {
         assertThat(FileSystemPool.INSTANCE.mounts(), empty());
     }
 
-    @AfterEach
+    @AfterAll
     public void tearDown()
     {
         assertThat(FileSystemPool.INSTANCE.mounts(), empty());
