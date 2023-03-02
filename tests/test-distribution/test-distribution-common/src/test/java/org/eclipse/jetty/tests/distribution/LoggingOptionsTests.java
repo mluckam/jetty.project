@@ -26,6 +26,8 @@ import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.tests.hometester.JettyHomeTester;
 import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.io.CleanupMode;
+import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -131,9 +133,9 @@ public class LoggingOptionsTests extends AbstractJettyHomeTest
 
     @ParameterizedTest(name = "[{index}] {0}")
     @MethodSource("validLoggingModules")
-    public void testLoggingConfiguration(String env, String loggingModules, List<String> expectedClasspathEntries, List<String> expectedEnabledModules) throws Exception
+    public void testLoggingConfiguration(String env, String loggingModules, List<String> expectedClasspathEntries,
+                                         List<String> expectedEnabledModules, @TempDir(cleanup = CleanupMode.ON_SUCCESS) Path jettyBase) throws Exception
     {
-        Path jettyBase = newTestJettyBaseDirectory();
         String jettyVersion = System.getProperty("jettyVersion");
         JettyHomeTester distribution = JettyHomeTester.Builder.newInstance()
             .jettyVersion(jettyVersion)

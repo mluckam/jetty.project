@@ -27,6 +27,8 @@ import org.eclipse.jetty.tests.hometester.JettyHomeTester;
 import org.eclipse.jetty.util.Fields;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.CleanupMode;
+import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -50,9 +52,8 @@ public class DemoModulesTests extends AbstractJettyHomeTest
 
     @ParameterizedTest
     @MethodSource("provideEnvironmentsToTest")
-    public void testDemoAddServerClasses(String env) throws Exception
+    public void testDemoAddServerClasses(String env, @TempDir(cleanup = CleanupMode.ON_SUCCESS) Path jettyBase) throws Exception
     {
-        Path jettyBase = newTestJettyBaseDirectory();
         String jettyVersion = System.getProperty("jettyVersion");
         JettyHomeTester distribution = JettyHomeTester.Builder.newInstance()
             .jettyVersion(jettyVersion)
@@ -94,9 +95,8 @@ public class DemoModulesTests extends AbstractJettyHomeTest
 
     @ParameterizedTest
     @MethodSource("provideEnvironmentsToTest")
-    public void testJspDump(String env) throws Exception
+    public void testJspDump(String env, @TempDir(cleanup = CleanupMode.ON_SUCCESS) Path jettyBase) throws Exception
     {
-        Path jettyBase = newTestJettyBaseDirectory();
         String jettyVersion = System.getProperty("jettyVersion");
         JettyHomeTester distribution = JettyHomeTester.Builder.newInstance()
             .jettyVersion(jettyVersion)
@@ -143,9 +143,8 @@ public class DemoModulesTests extends AbstractJettyHomeTest
     
     @ParameterizedTest
     @MethodSource("provideEnvironmentsToTest")
-    public void testJaasDemo(String env) throws Exception
+    public void testJaasDemo(String env, @TempDir(cleanup = CleanupMode.ON_SUCCESS) Path jettyBase) throws Exception
     {
-        Path jettyBase = newTestJettyBaseDirectory();
         String jettyVersion = System.getProperty("jettyVersion");
         JettyHomeTester distribution = JettyHomeTester.Builder.newInstance()
                 .jettyVersion(jettyVersion)
@@ -193,9 +192,8 @@ public class DemoModulesTests extends AbstractJettyHomeTest
 
     @ParameterizedTest
     @MethodSource("provideEnvironmentsToTest")
-    public void testJstlDemo(String env) throws Exception
+    public void testJstlDemo(String env, @TempDir(cleanup = CleanupMode.ON_SUCCESS) Path jettyBase) throws Exception
     {
-        Path jettyBase = newTestJettyBaseDirectory();
         String jettyVersion = System.getProperty("jettyVersion");
         JettyHomeTester distribution = JettyHomeTester.Builder.newInstance()
                 .jettyVersion(jettyVersion)
@@ -244,9 +242,8 @@ public class DemoModulesTests extends AbstractJettyHomeTest
 
     @ParameterizedTest
     @MethodSource("provideEnvironmentsToTest")
-    public void testAsyncRest(String env) throws Exception
+    public void testAsyncRest(String env, @TempDir(cleanup = CleanupMode.ON_SUCCESS) Path jettyBase) throws Exception
     {
-        Path jettyBase = newTestJettyBaseDirectory();
         String jettyVersion = System.getProperty("jettyVersion");
         JettyHomeTester distribution = JettyHomeTester.Builder.newInstance()
             .jettyVersion(jettyVersion)
@@ -303,9 +300,8 @@ public class DemoModulesTests extends AbstractJettyHomeTest
 
     @ParameterizedTest
     @MethodSource("provideEnvironmentsToTest")
-    public void testSpec(String env) throws Exception
+    public void testSpec(String env, @TempDir(cleanup = CleanupMode.ON_SUCCESS) Path jettyBase) throws Exception
     {
-        Path jettyBase = newTestJettyBaseDirectory();
         String jettyVersion = System.getProperty("jettyVersion");
         JettyHomeTester distribution = JettyHomeTester.Builder.newInstance()
             .jettyVersion(jettyVersion)
@@ -364,9 +360,8 @@ public class DemoModulesTests extends AbstractJettyHomeTest
     //@MethodSource("provideEnvironmentsToTest")
     @Disabled("not yet ready for this")
     @ValueSource(strings = "ee10")
-    public void testJPMS(String env) throws Exception
+    public void testJPMS(String env, @TempDir(cleanup = CleanupMode.ON_SUCCESS) Path jettyBase) throws Exception
     {
-        Path jettyBase = newTestJettyBaseDirectory();
         String jettyVersion = System.getProperty("jettyVersion");
         JettyHomeTester distribution = JettyHomeTester.Builder.newInstance()
             .jettyVersion(jettyVersion)
@@ -408,9 +403,8 @@ public class DemoModulesTests extends AbstractJettyHomeTest
 
     @ParameterizedTest
     @MethodSource("provideEnvironmentsToTest")
-    public void testSessionDump(String env) throws Exception
+    public void testSessionDump(String env, @TempDir(cleanup = CleanupMode.ON_SUCCESS) Path jettyBase) throws Exception
     {
-        Path jettyBase = newTestJettyBaseDirectory();
         String jettyVersion = System.getProperty("jettyVersion");
         JettyHomeTester distribution = JettyHomeTester.Builder.newInstance()
             .jettyVersion(jettyVersion)
@@ -475,9 +469,8 @@ public class DemoModulesTests extends AbstractJettyHomeTest
     }
 
     @Test
-    public void testDemoHandler() throws Exception
+    public void testDemoHandler(@TempDir(cleanup = CleanupMode.ON_SUCCESS) Path jettyBase) throws Exception
     {
-        Path jettyBase = newTestJettyBaseDirectory();
         String jettyVersion = System.getProperty("jettyVersion");
         JettyHomeTester distribution = JettyHomeTester.Builder.newInstance()
                 .jettyVersion(jettyVersion)

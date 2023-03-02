@@ -21,6 +21,8 @@ import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.tests.hometester.JettyHomeTester;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.io.CleanupMode;
+import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
@@ -32,13 +34,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class DynamicListenerTests extends AbstractJettyHomeTest
 {
-    private Path jettyBase;
 
-    @BeforeEach
-    public void setUp() throws IOException
-    {
-        jettyBase = newTestJettyBaseDirectory();
-    }
+    @TempDir(cleanup = CleanupMode.ON_SUCCESS)
+    private Path jettyBase;
 
     @ParameterizedTest
     @ValueSource(strings = {"ee8", "ee9", "ee10"})

@@ -24,6 +24,8 @@ import org.eclipse.jetty.tests.distribution.AbstractJettyHomeTest;
 import org.eclipse.jetty.tests.hometester.JettyHomeTester;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.CleanupMode;
+import org.junit.jupiter.api.io.TempDir;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
@@ -36,9 +38,8 @@ public class OpenIdTests extends AbstractJettyHomeTest
     @Test
     // FIXME
     @Disabled
-    public void testOpenID() throws Exception
+    public void testOpenID(@TempDir(cleanup = CleanupMode.ON_SUCCESS) Path jettyBase) throws Exception
     {
-        Path jettyBase = newTestJettyBaseDirectory();
         String jettyVersion = System.getProperty("jettyVersion");
         JettyHomeTester distribution = JettyHomeTester.Builder.newInstance()
             .jettyVersion(jettyVersion)

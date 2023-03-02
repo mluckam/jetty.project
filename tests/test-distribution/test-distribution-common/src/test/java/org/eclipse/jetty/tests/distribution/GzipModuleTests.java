@@ -22,6 +22,8 @@ import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.tests.hometester.JettyHomeTester;
 import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.io.CleanupMode;
+import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
@@ -37,9 +39,8 @@ public class GzipModuleTests extends AbstractJettyHomeTest
     @ParameterizedTest
     //@ValueSource(strings = {"ee9", "ee10"})
     @ValueSource(strings = {"ee10"})
-    public void testGzipDefault(String env) throws Exception
+    public void testGzipDefault(String env, @TempDir(cleanup = CleanupMode.ON_SUCCESS) Path jettyBase) throws Exception
     {
-        Path jettyBase = newTestJettyBaseDirectory();
         String jettyVersion = System.getProperty("jettyVersion");
         JettyHomeTester distribution = JettyHomeTester.Builder.newInstance()
             .jettyVersion(jettyVersion)
@@ -81,9 +82,8 @@ public class GzipModuleTests extends AbstractJettyHomeTest
     
     @ParameterizedTest
     @ValueSource(strings = {"ee9", "ee10"})
-    public void testGzipDefaultExcludedMimeType(String env) throws Exception
+    public void testGzipDefaultExcludedMimeType(String env, @TempDir(cleanup = CleanupMode.ON_SUCCESS) Path jettyBase) throws Exception
     {
-        Path jettyBase = newTestJettyBaseDirectory();
         String jettyVersion = System.getProperty("jettyVersion");
         JettyHomeTester distribution = JettyHomeTester.Builder.newInstance()
             .jettyVersion(jettyVersion)
@@ -126,9 +126,8 @@ public class GzipModuleTests extends AbstractJettyHomeTest
 
     @ParameterizedTest
     @ValueSource(strings = {"ee9", "ee10"})
-    public void testGzipAddWebappSpecificExcludeMimeType(String env) throws Exception
+    public void testGzipAddWebappSpecificExcludeMimeType(String env, @TempDir(cleanup = CleanupMode.ON_SUCCESS) Path jettyBase) throws Exception
     {
-        Path jettyBase = newTestJettyBaseDirectory();
         String jettyVersion = System.getProperty("jettyVersion");
         JettyHomeTester distribution = JettyHomeTester.Builder.newInstance()
             .jettyVersion(jettyVersion)

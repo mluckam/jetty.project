@@ -53,6 +53,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledForJreRange;
 import org.junit.jupiter.api.condition.EnabledForJreRange;
 import org.junit.jupiter.api.condition.JRE;
+import org.junit.jupiter.api.io.CleanupMode;
+import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -1104,9 +1106,8 @@ public class DistributionTests extends AbstractJettyHomeTest
     }
 
     @Test
-    public void testRequestLogFormatWithSpaces() throws Exception
+    public void testRequestLogFormatWithSpaces(@TempDir(cleanup = CleanupMode.ON_SUCCESS) Path jettyBase) throws Exception
     {
-        Path jettyBase = newTestJettyBaseDirectory();
         String jettyVersion = System.getProperty("jettyVersion");
         JettyHomeTester distribution = JettyHomeTester.Builder.newInstance()
             .jettyVersion(jettyVersion)
