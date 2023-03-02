@@ -47,7 +47,6 @@ import org.eclipse.jetty.tests.hometester.JettyHomeTester;
 import org.eclipse.jetty.toolchain.test.PathMatchers;
 import org.eclipse.jetty.util.BlockingArrayQueue;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledForJreRange;
@@ -73,11 +72,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class DistributionTests extends AbstractJettyHomeTest
 {
     @Test
-    public void testStartStop() throws Exception
+    public void testStartStop(@TempDir(cleanup = CleanupMode.ON_SUCCESS) Path jettyBase) throws Exception
     {
         String jettyVersion = System.getProperty("jettyVersion");
         JettyHomeTester distribution = JettyHomeTester.Builder.newInstance()
             .jettyVersion(jettyVersion)
+                .jettyBase(jettyBase)
             .mavenLocalRepository(System.getProperty("mavenRepoPath"))
             .build();
 
@@ -103,11 +103,12 @@ public class DistributionTests extends AbstractJettyHomeTest
 
     @ParameterizedTest
     @ValueSource(strings = {"ee9", "ee10"})
-    public void testQuickStartGenerationAndRun(String env) throws Exception
+    public void testQuickStartGenerationAndRun(String env, @TempDir(cleanup = CleanupMode.ON_SUCCESS) Path jettyBase) throws Exception
     {
         String jettyVersion = System.getProperty("jettyVersion");
         JettyHomeTester distribution = JettyHomeTester.Builder.newInstance()
             .jettyVersion(jettyVersion)
+                .jettyBase(jettyBase)
             .mavenLocalRepository(System.getProperty("mavenRepoPath"))
             .build();
 
@@ -156,11 +157,12 @@ public class DistributionTests extends AbstractJettyHomeTest
 
     @ParameterizedTest
     @ValueSource(strings = {"ee9", "ee10"})
-    public void testSimpleWebAppWithJSPandJSTL(String env) throws Exception
+    public void testSimpleWebAppWithJSPandJSTL(String env, @TempDir(cleanup = CleanupMode.ON_SUCCESS) Path jettyBase) throws Exception
     {
         String jettyVersion = System.getProperty("jettyVersion");
         JettyHomeTester distribution = JettyHomeTester.Builder.newInstance()
             .jettyVersion(jettyVersion)
+                .jettyBase(jettyBase)
             .mavenLocalRepository(System.getProperty("mavenRepoPath"))
             .build();
 
@@ -198,7 +200,7 @@ public class DistributionTests extends AbstractJettyHomeTest
 
     @ParameterizedTest
     @ValueSource(strings = {"ee10"})
-    public void testSimpleWebAppWithJSPOnModulePath(String env) throws Exception
+    public void testSimpleWebAppWithJSPOnModulePath(String env, @TempDir(cleanup = CleanupMode.ON_SUCCESS) Path jettyBase) throws Exception
     {
         // Testing with env=ee9 is not possible because jakarta.transaction:1.x
         // does not have a proper module-info.java, so JPMS resolution will fail.
@@ -207,6 +209,7 @@ public class DistributionTests extends AbstractJettyHomeTest
         String jettyVersion = System.getProperty("jettyVersion");
         JettyHomeTester distribution = JettyHomeTester.Builder.newInstance()
             .jettyVersion(jettyVersion)
+            .jettyBase(jettyBase)
             .mavenLocalRepository(System.getProperty("mavenRepoPath"))
             .build();
 
@@ -246,23 +249,24 @@ public class DistributionTests extends AbstractJettyHomeTest
 
     @ParameterizedTest
     @ValueSource(strings = {"ee9", "ee10"})
-    public void testSimpleWebAppWithJSPOverH2C(String env) throws Exception
+    public void testSimpleWebAppWithJSPOverH2C(String env, @TempDir(cleanup = CleanupMode.ON_SUCCESS) Path jettyBase) throws Exception
     {
-        testSimpleWebAppWithJSPOverHTTP2(env, false);
+        testSimpleWebAppWithJSPOverHTTP2(env, false, jettyBase);
     }
 
     @ParameterizedTest
     @ValueSource(strings = {"ee9", "ee10"})
-    public void testSimpleWebAppWithJSPOverH2(String env) throws Exception
+    public void testSimpleWebAppWithJSPOverH2(String env, @TempDir(cleanup = CleanupMode.ON_SUCCESS) Path jettyBase) throws Exception
     {
-        testSimpleWebAppWithJSPOverHTTP2(env, true);
+        testSimpleWebAppWithJSPOverHTTP2(env, true, jettyBase);
     }
 
-    private void testSimpleWebAppWithJSPOverHTTP2(String env, boolean ssl) throws Exception
+    private void testSimpleWebAppWithJSPOverHTTP2(String env, boolean ssl, Path jettyBase) throws Exception
     {
         String jettyVersion = System.getProperty("jettyVersion");
         JettyHomeTester distribution = JettyHomeTester.Builder.newInstance()
             .jettyVersion(jettyVersion)
+            .jettyBase(jettyBase)
             .mavenLocalRepository(System.getProperty("mavenRepoPath"))
             .build();
 
@@ -299,11 +303,12 @@ public class DistributionTests extends AbstractJettyHomeTest
 
     @ParameterizedTest
     @ValueSource(strings = {"ee9", "ee10"})
-    public void testLog4j2ModuleWithSimpleWebAppWithJSP(String env) throws Exception
+    public void testLog4j2ModuleWithSimpleWebAppWithJSP(String env, @TempDir(cleanup = CleanupMode.ON_SUCCESS) Path jettyBase) throws Exception
     {
         String jettyVersion = System.getProperty("jettyVersion");
         JettyHomeTester distribution = JettyHomeTester.Builder.newInstance()
             .jettyVersion(jettyVersion)
+            .jettyBase(jettyBase)
             .mavenLocalRepository(System.getProperty("mavenRepoPath"))
             .build();
 
@@ -340,11 +345,12 @@ public class DistributionTests extends AbstractJettyHomeTest
 
     @ParameterizedTest
     @CsvSource({"http,ee9", "https,ee9", "http,ee10", "https,ee10"})
-    public void testWebsocketClientInWebappProvidedByServer(String scheme, String env) throws Exception
+    public void testWebsocketClientInWebappProvidedByServer(String scheme, String env, @TempDir(cleanup = CleanupMode.ON_SUCCESS) Path jettyBase) throws Exception
     {
         String jettyVersion = System.getProperty("jettyVersion");
         JettyHomeTester distribution = JettyHomeTester.Builder.newInstance()
             .jettyVersion(jettyVersion)
+             .jettyBase(jettyBase)
             .mavenLocalRepository(System.getProperty("mavenRepoPath"))
             .build();
 
@@ -385,11 +391,12 @@ public class DistributionTests extends AbstractJettyHomeTest
 
     @ParameterizedTest
     @CsvSource({"http,ee9", "https,ee9", "http,ee10", "https,ee10"})
-    public void testWebsocketClientInWebapp(String scheme, String env) throws Exception
+    public void testWebsocketClientInWebapp(String scheme, String env, @TempDir(cleanup = CleanupMode.ON_SUCCESS) Path jettyBase) throws Exception
     {
         String jettyVersion = System.getProperty("jettyVersion");
         JettyHomeTester distribution = JettyHomeTester.Builder.newInstance()
             .jettyVersion(jettyVersion)
+            .jettyBase(jettyBase)
             .mavenLocalRepository(System.getProperty("mavenRepoPath"))
             .build();
 
@@ -429,9 +436,8 @@ public class DistributionTests extends AbstractJettyHomeTest
 
     @Test
     @Tag("external")
-    public void testDownload() throws Exception
+    public void testDownload(@TempDir(cleanup = CleanupMode.ON_SUCCESS) Path jettyBase) throws Exception
     {
-        Path jettyBase = Files.createTempDirectory("jetty_base");
         String jettyVersion = System.getProperty("jettyVersion");
         JettyHomeTester distribution = JettyHomeTester.Builder.newInstance()
             .jettyVersion(jettyVersion)
@@ -451,11 +457,12 @@ public class DistributionTests extends AbstractJettyHomeTest
 
     @ParameterizedTest
     @ValueSource(strings = {"ee9", "ee10"})
-    public void testWebAppWithProxyAndJPMS(String env) throws Exception
+    public void testWebAppWithProxyAndJPMS(String env, @TempDir(cleanup = CleanupMode.ON_SUCCESS) Path jettyBase) throws Exception
     {
         String jettyVersion = System.getProperty("jettyVersion");
         JettyHomeTester distribution = JettyHomeTester.Builder.newInstance()
             .jettyVersion(jettyVersion)
+            .jettyBase(jettyBase)
             .mavenLocalRepository(System.getProperty("mavenRepoPath"))
             .build();
 
@@ -510,7 +517,7 @@ public class DistributionTests extends AbstractJettyHomeTest
 
     @ParameterizedTest
     @CsvSource(value = {"ee9,false", "ee10,false", "ee10,true"})
-    public void testSimpleWebAppWithWebsocket(String env, String jpms) throws Exception
+    public void testSimpleWebAppWithWebsocket(String env, String jpms, @TempDir(cleanup = CleanupMode.ON_SUCCESS) Path jettyBase) throws Exception
     {
         // Testing ee9 with JPMS won't work because ee9 jakarta.* jars
         // do not have a proper module-info.java so JPMS resolution fails.
@@ -518,6 +525,7 @@ public class DistributionTests extends AbstractJettyHomeTest
         String jettyVersion = System.getProperty("jettyVersion");
         JettyHomeTester distribution = JettyHomeTester.Builder.newInstance()
             .jettyVersion(jettyVersion)
+            .jettyBase(jettyBase)
             .mavenLocalRepository(System.getProperty("mavenRepoPath"))
             .build();
 
@@ -595,11 +603,12 @@ public class DistributionTests extends AbstractJettyHomeTest
     }
 
     @Test
-    public void testStartStopLog4j2Modules() throws Exception
+    public void testStartStopLog4j2Modules(@TempDir(cleanup = CleanupMode.ON_SUCCESS) Path jettyBase) throws Exception
     {
         String jettyVersion = System.getProperty("jettyVersion");
         JettyHomeTester distribution = JettyHomeTester.Builder.newInstance()
             .jettyVersion(jettyVersion)
+            .jettyBase(jettyBase)
             .mavenLocalRepository(System.getProperty("mavenRepoPath"))
             .build();
 
@@ -630,11 +639,12 @@ public class DistributionTests extends AbstractJettyHomeTest
     }
 
     @Test
-    public void testJavaUtilLogging() throws Exception
+    public void testJavaUtilLogging(@TempDir(cleanup = CleanupMode.ON_SUCCESS) Path jettyBase) throws Exception
     {
         String jettyVersion = System.getProperty("jettyVersion");
         JettyHomeTester distribution = JettyHomeTester.Builder.newInstance()
             .jettyVersion(jettyVersion)
+            .jettyBase(jettyBase)
             .mavenLocalRepository(System.getProperty("mavenRepoPath"))
             .build();
 
@@ -664,11 +674,12 @@ public class DistributionTests extends AbstractJettyHomeTest
     }
 
     @Test
-    public void testJavaUtilLoggingBridge() throws Exception
+    public void testJavaUtilLoggingBridge(@TempDir(cleanup = CleanupMode.ON_SUCCESS) Path jettyBase) throws Exception
     {
         String jettyVersion = System.getProperty("jettyVersion");
         JettyHomeTester distribution = JettyHomeTester.Builder.newInstance()
             .jettyVersion(jettyVersion)
+            .jettyBase(jettyBase)
             .mavenLocalRepository(System.getProperty("mavenRepoPath"))
             .build();
 
@@ -677,7 +688,7 @@ public class DistributionTests extends AbstractJettyHomeTest
             assertTrue(run1.awaitFor(START_TIMEOUT, TimeUnit.SECONDS));
             assertEquals(0, run1.getExitValue());
 
-            Path jettyBase = run1.getConfig().getJettyBase();
+            //Path jettyBase = run1.getConfig().getJettyBase();
 
             Path julConfig = jettyBase.resolve("resources/java-util-logging.properties");
             assertTrue(Files.exists(julConfig));
@@ -725,11 +736,12 @@ public class DistributionTests extends AbstractJettyHomeTest
     }
 
     @Test
-    public void testBeforeDirectiveInModule() throws Exception
+    public void testBeforeDirectiveInModule(@TempDir(cleanup = CleanupMode.ON_SUCCESS) Path jettyBase) throws Exception
     {
         String jettyVersion = System.getProperty("jettyVersion");
         JettyHomeTester distribution = JettyHomeTester.Builder.newInstance()
             .jettyVersion(jettyVersion)
+            .jettyBase(jettyBase)
             .mavenLocalRepository(System.getProperty("mavenRepoPath"))
             .build();
 
@@ -738,7 +750,7 @@ public class DistributionTests extends AbstractJettyHomeTest
             assertTrue(run1.awaitFor(START_TIMEOUT, TimeUnit.SECONDS));
             assertEquals(0, run1.getExitValue());
 
-            Path jettyBase = run1.getConfig().getJettyBase();
+            //Path jettyBase = run1.getConfig().getJettyBase();
 
             Path jettyBaseEtc = jettyBase.resolve("etc");
             Files.createDirectories(jettyBaseEtc);
@@ -810,11 +822,12 @@ public class DistributionTests extends AbstractJettyHomeTest
     }
 
     @Test
-    public void testDefaultLoggingProviderNotActiveWhenExplicitProviderIsPresent() throws Exception
+    public void testDefaultLoggingProviderNotActiveWhenExplicitProviderIsPresent(@TempDir(cleanup = CleanupMode.ON_SUCCESS) Path jettyBase) throws Exception
     {
         String jettyVersion = System.getProperty("jettyVersion");
         JettyHomeTester distribution1 = JettyHomeTester.Builder.newInstance()
             .jettyVersion(jettyVersion)
+            .jettyBase(jettyBase)
             .mavenLocalRepository(System.getProperty("mavenRepoPath"))
             .build();
 
@@ -823,7 +836,7 @@ public class DistributionTests extends AbstractJettyHomeTest
             assertTrue(run1.awaitFor(START_TIMEOUT, TimeUnit.SECONDS));
             assertEquals(0, run1.getExitValue());
 
-            Path jettyBase = run1.getConfig().getJettyBase();
+            //Path jettyBase = run1.getConfig().getJettyBase();
 
             assertTrue(Files.exists(jettyBase.resolve("resources/logback.xml")));
             // The jetty-logging.properties should be absent.
@@ -841,7 +854,7 @@ public class DistributionTests extends AbstractJettyHomeTest
             assertTrue(run2.awaitFor(START_TIMEOUT, TimeUnit.SECONDS));
             assertEquals(0, run2.getExitValue());
 
-            Path jettyBase = run2.getConfig().getJettyBase();
+            //Path jettyBase = run2.getConfig().getJettyBase();
 
             assertTrue(Files.exists(jettyBase.resolve("resources/logback.xml")));
             // The jetty-logging.properties should be absent.
@@ -851,11 +864,12 @@ public class DistributionTests extends AbstractJettyHomeTest
 
     @Test
     @EnabledForJreRange(min = JRE.JAVA_16)
-    public void testUnixDomain() throws Exception
+    public void testUnixDomain(@TempDir(cleanup = CleanupMode.ON_SUCCESS) Path jettyBase) throws Exception
     {
         String jettyVersion = System.getProperty("jettyVersion");
         JettyHomeTester distribution = JettyHomeTester.Builder.newInstance()
             .jettyVersion(jettyVersion)
+            .jettyBase(jettyBase)
             .mavenLocalRepository(System.getProperty("mavenRepoPath"))
             .build();
 
@@ -883,15 +897,15 @@ public class DistributionTests extends AbstractJettyHomeTest
     }
 
     @Test
-    public void testModuleWithExecEmitsWarning() throws Exception
+    public void testModuleWithExecEmitsWarning(@TempDir(cleanup = CleanupMode.ON_SUCCESS) Path jettyBase) throws Exception
     {
         String jettyVersion = System.getProperty("jettyVersion");
         JettyHomeTester distribution = JettyHomeTester.Builder.newInstance()
             .jettyVersion(jettyVersion)
+            .jettyBase(jettyBase)
             .mavenLocalRepository(System.getProperty("mavenRepoPath"))
             .build();
 
-        Path jettyBase = distribution.getJettyBase();
         Path jettyBaseModules = jettyBase.resolve("modules");
         Files.createDirectories(jettyBaseModules);
         Path execModule = jettyBaseModules.resolve("exec.mod");
@@ -916,15 +930,15 @@ public class DistributionTests extends AbstractJettyHomeTest
     }
 
     @Test
-    public void testIniSectionPropertyOverriddenByCommandLine() throws Exception
+    public void testIniSectionPropertyOverriddenByCommandLine(@TempDir(cleanup = CleanupMode.ON_SUCCESS) Path jettyBase) throws Exception
     {
         String jettyVersion = System.getProperty("jettyVersion");
         JettyHomeTester distribution = JettyHomeTester.Builder.newInstance()
             .jettyVersion(jettyVersion)
+            .jettyBase(jettyBase)
             .mavenLocalRepository(System.getProperty("mavenRepoPath"))
             .build();
 
-        Path jettyBase = distribution.getJettyBase();
         Path jettyBaseModules = jettyBase.resolve("modules");
         Files.createDirectories(jettyBaseModules);
         String pathProperty = "jetty.sslContext.keyStorePath";
@@ -955,11 +969,12 @@ public class DistributionTests extends AbstractJettyHomeTest
     }
 
     @Test
-    public void testWellKnownModule() throws Exception
+    public void testWellKnownModule(@TempDir(cleanup = CleanupMode.ON_SUCCESS) Path jettyBase) throws Exception
     {
         String jettyVersion = System.getProperty("jettyVersion");
         JettyHomeTester distribution = JettyHomeTester.Builder.newInstance()
             .jettyVersion(jettyVersion)
+            .jettyBase(jettyBase)
             .mavenLocalRepository(System.getProperty("mavenRepoPath"))
             .build();
 
@@ -997,15 +1012,15 @@ public class DistributionTests extends AbstractJettyHomeTest
     }
 
     @Test
-    public void testDeprecatedModule() throws Exception
+    public void testDeprecatedModule(@TempDir(cleanup = CleanupMode.ON_SUCCESS) Path jettyBase) throws Exception
     {
         String jettyVersion = System.getProperty("jettyVersion");
         JettyHomeTester distribution = JettyHomeTester.Builder.newInstance()
             .jettyVersion(jettyVersion)
+            .jettyBase(jettyBase)
             .mavenLocalRepository(System.getProperty("mavenRepoPath"))
             .build();
 
-        Path jettyBase = distribution.getJettyBase();
         Path jettyBaseModules = jettyBase.resolve("modules");
         Files.createDirectories(jettyBaseModules);
         Path deprecatedModule = jettyBaseModules.resolve("deprecated.mod");
@@ -1048,11 +1063,12 @@ public class DistributionTests extends AbstractJettyHomeTest
 
     @Test
     @Tag("flaky")
-    public void testH3() throws Exception
+    public void testH3(@TempDir(cleanup = CleanupMode.ON_SUCCESS) Path jettyBase) throws Exception
     {
         String jettyVersion = System.getProperty("jettyVersion");
         JettyHomeTester distribution = JettyHomeTester.Builder.newInstance()
             .jettyVersion(jettyVersion)
+            .jettyBase(jettyBase)
             .mavenLocalRepository(System.getProperty("mavenRepoPath"))
             .build();
 
@@ -1082,11 +1098,12 @@ public class DistributionTests extends AbstractJettyHomeTest
     }
 
     @Test
-    public void testDryRunProperties() throws Exception
+    public void testDryRunProperties(@TempDir(cleanup = CleanupMode.ON_SUCCESS) Path jettyBase) throws Exception
     {
         String jettyVersion = System.getProperty("jettyVersion");
         JettyHomeTester distribution = JettyHomeTester.Builder.newInstance()
             .jettyVersion(jettyVersion)
+            .jettyBase(jettyBase)
             .mavenLocalRepository(System.getProperty("mavenRepoPath"))
             .build();
 
@@ -1158,11 +1175,12 @@ public class DistributionTests extends AbstractJettyHomeTest
     }
 
     @Test
-    public void testFastCGIProxying() throws Exception
+    public void testFastCGIProxying(@TempDir(cleanup = CleanupMode.ON_SUCCESS) Path jettyBase) throws Exception
     {
         String jettyVersion = System.getProperty("jettyVersion");
         JettyHomeTester distribution = JettyHomeTester.Builder.newInstance()
             .jettyVersion(jettyVersion)
+            .jettyBase(jettyBase)
             .mavenLocalRepository(System.getProperty("mavenRepoPath"))
             .build();
 
@@ -1173,7 +1191,7 @@ public class DistributionTests extends AbstractJettyHomeTest
 
             // Add a FastCGI connector to simulate, for example, php-fpm.
             int fcgiPort = distribution.freePort();
-            Path jettyBase = distribution.getJettyBase();
+            //Path jettyBase = distribution.getJettyBase();
             Path jettyBaseEtc = jettyBase.resolve("etc");
             Files.createDirectories(jettyBaseEtc);
             Path fcgiConnectorXML = jettyBaseEtc.resolve("fcgi-connector.xml");
@@ -1262,11 +1280,12 @@ public class DistributionTests extends AbstractJettyHomeTest
     @Test
     @DisabledForJreRange(max = JRE.JAVA_18)
     @Tag("flaky")
-    public void testVirtualThreadPool() throws Exception
+    public void testVirtualThreadPool(@TempDir(cleanup = CleanupMode.ON_SUCCESS) Path jettyBase) throws Exception
     {
         String jettyVersion = System.getProperty("jettyVersion");
         JettyHomeTester distribution = JettyHomeTester.Builder.newInstance()
             .jettyVersion(jettyVersion)
+            .jettyBase(jettyBase)
             .mavenLocalRepository(System.getProperty("mavenRepoPath"))
             .build();
 
