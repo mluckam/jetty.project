@@ -77,7 +77,7 @@ public class DistributionTests extends AbstractJettyHomeTest
         String jettyVersion = System.getProperty("jettyVersion");
         JettyHomeTester distribution = JettyHomeTester.Builder.newInstance()
             .jettyVersion(jettyVersion)
-                .jettyBase(jettyBase)
+            .jettyBase(jettyBase)
             .mavenLocalRepository(System.getProperty("mavenRepoPath"))
             .build();
 
@@ -350,7 +350,7 @@ public class DistributionTests extends AbstractJettyHomeTest
         String jettyVersion = System.getProperty("jettyVersion");
         JettyHomeTester distribution = JettyHomeTester.Builder.newInstance()
             .jettyVersion(jettyVersion)
-             .jettyBase(jettyBase)
+            .jettyBase(jettyBase)
             .mavenLocalRepository(System.getProperty("mavenRepoPath"))
             .build();
 

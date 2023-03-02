@@ -24,6 +24,7 @@ import java.io.RandomAccessFile;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.URI;
+import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
@@ -337,6 +338,9 @@ public class JettyHomeTester
                     }
                 }
             }
+        } catch (FileAlreadyExistsException e)
+        {
+            LOGGER.warn("ignore FileAlreadyExistsException: archiveURI {}, outputDir {}", archiveURI, outputDir);
         }
     }
 
