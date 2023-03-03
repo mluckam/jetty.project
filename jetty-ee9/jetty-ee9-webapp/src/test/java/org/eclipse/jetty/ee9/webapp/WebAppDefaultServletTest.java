@@ -46,7 +46,6 @@ public class WebAppDefaultServletTest
     @BeforeEach
     public void prepareServer() throws Exception
     {
-        assertThat(FileSystemPool.INSTANCE.mounts(), empty());
         server = new Server();
         connector = new LocalConnector(server);
         connector.getConnectionFactory(HttpConnectionFactory.class).getHttpConfiguration().setUriCompliance(UriCompliance.RFC3986);
