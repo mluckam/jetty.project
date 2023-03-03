@@ -338,7 +338,8 @@ public class JettyHomeTester
                     }
                 }
             }
-        } catch (FileAlreadyExistsException e)
+        }
+        catch (FileAlreadyExistsException e)
         {
             LOGGER.warn("ignore FileAlreadyExistsException: archiveURI {}, outputDir {}", archiveURI, outputDir);
         }
