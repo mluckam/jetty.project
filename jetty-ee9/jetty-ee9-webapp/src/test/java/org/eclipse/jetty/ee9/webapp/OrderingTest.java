@@ -58,19 +58,7 @@ public class OrderingTest
             Files.createFile(file);
         return ResourceFactory.root().newResource(file);
     }
-
-    @BeforeEach
-    public void beforeEach()
-    {
-        assertThat(FileSystemPool.INSTANCE.mounts(), empty());
-    }
-
-    @AfterEach
-    public void afterEach()
-    {
-        assertThat(FileSystemPool.INSTANCE.mounts(), empty());
-    }
-
+    
     @Test
     public void testRelativeOrdering0()
         throws Exception

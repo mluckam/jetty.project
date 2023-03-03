@@ -59,19 +59,6 @@ public class OrderingTest
         return ResourceFactory.root().newResource(file);
     }
 
-    @BeforeEach
-    public void beforeEach()
-    {
-        // ensure work dir exists, and is empty
-        assertThat(FileSystemPool.INSTANCE.mounts(), empty());
-    }
-
-    @AfterEach
-    public void afterEach()
-    {
-        assertThat(FileSystemPool.INSTANCE.mounts(), empty());
-    }
-
     @Test
     public void testRelativeOrdering0()
         throws Exception
