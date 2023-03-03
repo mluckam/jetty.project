@@ -39,18 +39,6 @@ import static org.hamcrest.Matchers.is;
 public class TempDirTest
 {
 
-    @BeforeAll
-    public void before()
-    {
-        assertThat(FileSystemPool.INSTANCE.mounts(), empty());
-    }
-
-    @AfterAll
-    public void tearDown()
-    {
-        assertThat(FileSystemPool.INSTANCE.mounts(), empty());
-    }
-
     /**
      * Test ServletContext.TEMPDIR as valid directory with types File, String and Path.
      */

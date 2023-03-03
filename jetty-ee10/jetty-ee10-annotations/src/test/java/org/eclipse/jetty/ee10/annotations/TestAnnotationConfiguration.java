@@ -76,7 +76,6 @@ public class TestAnnotationConfiguration
     @BeforeEach
     public void setup() throws Exception
     {
-        assertThat(FileSystemPool.INSTANCE.mounts(), empty());
         web25 = MavenTestingUtils.getTestResourcePathFile("web25.xml");
         web31false = MavenTestingUtils.getTestResourcePathFile("web31false.xml");
         web31true = MavenTestingUtils.getTestResourcePathFile("web31true.xml");

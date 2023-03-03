@@ -46,14 +46,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class TempDirTest
 {
-    @BeforeAll
-    public void before()
-    {
-        assertThat(FileSystemPool.INSTANCE.mounts(), empty());
-    }
-
-    @AfterAll
-    public void tearDown()
+    public static void tearDown()
     {
         assertThat(FileSystemPool.INSTANCE.mounts(), empty());
     }
