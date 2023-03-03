@@ -58,7 +58,7 @@ public class OrderingTest
             Files.createFile(file);
         return ResourceFactory.root().newResource(file);
     }
-    
+
     @Test
     public void testRelativeOrdering0()
         throws Exception

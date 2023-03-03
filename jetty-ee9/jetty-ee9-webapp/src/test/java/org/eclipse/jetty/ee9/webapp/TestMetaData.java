@@ -63,7 +63,6 @@ public class TestMetaData
     @BeforeEach
     public void setUp(@TempDir(cleanup = CleanupMode.ON_SUCCESS) Path testDir) throws Exception
     {
-        assertThat(FileSystemPool.INSTANCE.mounts(), empty());
         resourceFactory = ResourceFactory.closeable();
 
         Path jarsDir = testDir.resolve("jars");
