@@ -296,7 +296,7 @@ public class JettyHomeTester
         return "java";
     }
 
-    public static void unzip(Path archive, Path outputDir) throws IOException
+    public static synchronized void unzip(Path archive, Path outputDir) throws IOException
     {
         if (!Files.exists(outputDir))
             throw new FileNotFoundException("Directory does not exist: " + outputDir);
