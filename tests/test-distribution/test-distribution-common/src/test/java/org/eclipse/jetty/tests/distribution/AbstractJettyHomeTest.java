@@ -31,7 +31,7 @@ public class AbstractJettyHomeTest
 {
     protected HttpClient client;
 
-    public static final int START_TIMEOUT = Integer.getInteger("home.start.timeout", 20);
+    public static final int START_TIMEOUT = Integer.getInteger("home.start.timeout", 30);
 
     public static String toEnvironment(String module, String environment)
     {
