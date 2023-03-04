@@ -36,6 +36,8 @@ import org.eclipse.jetty.toolchain.test.FS;
 import org.eclipse.jetty.toolchain.test.IO;
 import org.eclipse.jetty.toolchain.test.MavenTestingUtils;
 import org.eclipse.jetty.util.TypeUtil;
+import org.junit.jupiter.api.io.CleanupMode;
+import org.junit.jupiter.api.io.TempDir;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
@@ -43,13 +45,9 @@ public abstract class AbstractGzipTest
 {
     protected static final int DEFAULT_OUTPUT_BUFFER_SIZE = new HttpConfiguration().getOutputBufferSize();
 
+    @TempDir(cleanup = CleanupMode.ON_SUCCESS)
     protected Path workDir;
 
-    public AbstractGzipTest()
-    {
-        workDir = MavenTestingUtils.getTargetTestingPath(this.getClass().getName());
-        FS.ensureEmpty(workDir);
-    }
 
     protected FilterInputStream newContentEncodingFilterInputStream(String contentEncoding, InputStream inputStream) throws IOException
     {
