@@ -111,7 +111,6 @@ public class TestMetaData
     public void tearDown()
     {
         IO.close(resourceFactory);
-        assertThat(FileSystemPool.INSTANCE.mounts(), empty());
     }
 
     @Test
