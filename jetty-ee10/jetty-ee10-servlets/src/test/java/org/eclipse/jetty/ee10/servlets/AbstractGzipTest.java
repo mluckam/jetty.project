@@ -48,7 +48,6 @@ public abstract class AbstractGzipTest
     @TempDir(cleanup = CleanupMode.ON_SUCCESS)
     protected Path workDir;
 
-
     protected FilterInputStream newContentEncodingFilterInputStream(String contentEncoding, InputStream inputStream) throws IOException
     {
         if (contentEncoding == null)
