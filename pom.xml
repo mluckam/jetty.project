@@ -2011,6 +2011,7 @@
         <spotbugs.skip>false</spotbugs.skip>
         <spotbugs.onlyAnalyze>org.eclipse.jetty.*</spotbugs.onlyAnalyze>
         <maven.repo.uri></maven.repo.uri>
+        <home.start.timeout>30</home.start.timeout>
       </properties>
       <modules>
       <!-- FIXME: Do we want to keep this?
