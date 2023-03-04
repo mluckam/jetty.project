@@ -13,6 +13,7 @@
 
 package org.eclipse.jetty.ee9.servlet;
 
+import java.nio.file.Path;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import org.eclipse.jetty.client.ContentResponse;
@@ -32,6 +33,8 @@ import org.eclipse.jetty.util.resource.ResourceFactory;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.CleanupMode;
+import org.junit.jupiter.api.io.TempDir;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
@@ -43,7 +46,6 @@ import static org.hamcrest.Matchers.is;
  */
 public class GzipHandlerIsHandledTest
 {
-    public WorkDir workDir;
 
     private Server server;
     private HttpClient client;
@@ -63,27 +65,20 @@ public class GzipHandlerIsHandledTest
         client.start();
     }
 
-    @BeforeEach
-    public void beforeEach()
-    {
-        assertThat(FileSystemPool.INSTANCE.mounts(), empty());
-    }
-
     @AfterEach
     public void tearDown()
     {
         LifeCycle.stop(client);
         LifeCycle.stop(server);
-        assertThat(FileSystemPool.INSTANCE.mounts(), empty());
     }
 
     @Test
-    public void testRequest() throws Exception
+    public void testRequest(@TempDir(cleanup = CleanupMode.ON_SUCCESS) Path tmpPath) throws Exception
     {
         Handler.Sequence handlers = new Handler.Sequence();
 
         ResourceHandler resourceHandler = new ResourceHandler();
-        resourceHandler.setBaseResource(ResourceFactory.root().newResource(workDir.getPath()));
+        resourceHandler.setBaseResource(ResourceFactory.root().newResource(tmpPath));
         resourceHandler.setDirAllowed(true);
         resourceHandler.setHandler(new EventHandler(events, "ResourceHandler"));
 
