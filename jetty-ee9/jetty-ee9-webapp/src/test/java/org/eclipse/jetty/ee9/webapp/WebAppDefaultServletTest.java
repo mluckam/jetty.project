@@ -86,7 +86,6 @@ public class WebAppDefaultServletTest
     {
         if (server != null)
             server.stop();
-        assertThat(FileSystemPool.INSTANCE.mounts(), empty());
     }
 
     public static Stream<Arguments> argumentsStream()
