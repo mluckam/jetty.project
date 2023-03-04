@@ -179,12 +179,11 @@ public class DemoModulesTests extends AbstractJettyHomeTest
                 assertTrue(runStart.awaitConsoleLogsFor("Started oejs.Server@", START_TIMEOUT, TimeUnit.SECONDS));
 
                 startHttpClient();
-                ContentResponse response = client.GET(baseURI + "/auth.html");
                 Fields fields = new Fields();
                 fields.put("j_username", "me");
                 fields.put("j_password", "me");
-                response = client.FORM(baseURI + "/j_security_check", fields);
-                assertEquals(HttpStatus.OK_200, response.getStatus(), new ResponseDetails(response));;
+                ContentResponse response = client.FORM(baseURI + "/j_security_check", fields);
+                assertEquals(HttpStatus.OK_200, response.getStatus(), new ResponseDetails(response));
                 assertThat(response.getContentAsString(), containsString("SUCCESS!"));
             }
         }

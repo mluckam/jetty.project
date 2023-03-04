@@ -39,7 +39,6 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.maven.repository.internal.MavenRepositorySystemUtils;
@@ -319,7 +318,7 @@ public class JettyHomeTester
                 // ensure proper unpack order (eg: directories before files)
                 List<Path> sorted = entriesStream
                     .sorted()
-                    .collect(Collectors.toList());
+                    .toList();
 
                 for (Path path : sorted)
                 {
