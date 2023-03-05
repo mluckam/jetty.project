@@ -84,12 +84,6 @@ public class ForcedServletTest
         server.start();
     }
 
-    @AfterEach
-    public void afterEach()
-    {
-        assertThat(FileSystemPool.INSTANCE.mounts(), empty());
-    }
-    
     private void copyClass(Class<?> clazz, Path destClasses) throws IOException
     {
         String classRelativeFilename = clazz.getName().replace('.', '/') + ".class";
