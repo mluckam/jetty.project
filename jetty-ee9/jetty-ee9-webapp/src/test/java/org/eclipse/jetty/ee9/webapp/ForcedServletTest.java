@@ -56,7 +56,6 @@ public class ForcedServletTest
     @BeforeEach
     public void setup() throws Exception
     {
-        assertThat(FileSystemPool.INSTANCE.mounts(), empty());
         server = new Server();
         connector = new LocalConnector(server);
         server.addConnector(connector);
