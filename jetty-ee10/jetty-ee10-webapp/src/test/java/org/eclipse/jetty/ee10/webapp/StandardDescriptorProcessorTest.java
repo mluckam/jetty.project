@@ -21,13 +21,12 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.toolchain.test.MavenTestingUtils;
-import org.eclipse.jetty.toolchain.test.jupiter.WorkDir;
-import org.eclipse.jetty.toolchain.test.jupiter.WorkDirExtension;
 import org.eclipse.jetty.util.resource.FileSystemPool;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.CleanupMode;
+import org.junit.jupiter.api.io.TempDir;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
@@ -35,7 +34,6 @@ import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalToIgnoringCase;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@ExtendWith(WorkDirExtension.class)
 public class StandardDescriptorProcessorTest
 {
     //TODO add tests for other methods
@@ -57,12 +55,11 @@ public class StandardDescriptorProcessorTest
     }
 
     @Test
-    public void testVisitSessionConfig(WorkDir workDir) throws Exception
+    public void testVisitSessionConfig(@TempDir(cleanup = CleanupMode.ON_SUCCESS) Path docroot) throws Exception
     {
         File webXml = MavenTestingUtils.getTestResourceFile("web-session-config.xml");
         WebAppContext wac = new WebAppContext();
         wac.setServer(_server);
-        Path docroot = workDir.getEmptyPathDir();
         wac.setBaseResourceAsPath(docroot);
         wac.setDescriptor(webXml.toURI().toURL().toString());
         wac.start();

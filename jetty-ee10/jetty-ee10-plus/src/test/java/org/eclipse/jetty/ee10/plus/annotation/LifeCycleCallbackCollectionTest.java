@@ -21,18 +21,16 @@ import org.eclipse.jetty.ee10.servlet.ServletHolder;
 import org.eclipse.jetty.ee10.webapp.WebAppContext;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.toolchain.test.FS;
-import org.eclipse.jetty.toolchain.test.jupiter.WorkDir;
-import org.eclipse.jetty.toolchain.test.jupiter.WorkDirExtension;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.TempDir;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.io.CleanupMode.ON_SUCCESS;
 
-@ExtendWith(WorkDirExtension.class)
 public class LifeCycleCallbackCollectionTest
 {
     public static class TestServlet extends HttpServlet
@@ -175,10 +173,8 @@ public class LifeCycleCallbackCollectionTest
     }
 
     @Test
-    public void testServletPostConstructPreDestroy(WorkDir workDir) throws Exception
+    public void testServletPostConstructPreDestroy(@TempDir(cleanup = ON_SUCCESS) Path testDir) throws Exception
     {
-        // Start with an empty dir
-        Path testDir = workDir.getEmptyPathDir();
 
         Server server = new Server();
         WebAppContext context = new WebAppContext();

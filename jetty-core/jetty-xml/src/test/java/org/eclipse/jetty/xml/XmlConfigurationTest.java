@@ -42,8 +42,6 @@ import org.eclipse.jetty.logging.JettyLogger;
 import org.eclipse.jetty.logging.StdErrAppender;
 import org.eclipse.jetty.toolchain.test.FS;
 import org.eclipse.jetty.toolchain.test.MavenTestingUtils;
-import org.eclipse.jetty.toolchain.test.jupiter.WorkDir;
-import org.eclipse.jetty.toolchain.test.jupiter.WorkDirExtension;
 import org.eclipse.jetty.util.IO;
 import org.eclipse.jetty.util.annotation.Name;
 import org.eclipse.jetty.util.component.AbstractLifeCycle;
@@ -58,7 +56,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.OS;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.CleanupMode;
+import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -84,13 +83,13 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@ExtendWith(WorkDirExtension.class)
 public class XmlConfigurationTest
 {
     private static final String STRING_ARRAY_XML = "<Array type=\"String\"><Item type=\"String\">String1</Item><Item type=\"String\">String2</Item></Array>";
     private static final String INT_ARRAY_XML = "<Array type=\"int\"><Item type=\"int\">1</Item><Item type=\"int\">2</Item></Array>";
 
-    public WorkDir workDir;
+    @TempDir(cleanup = CleanupMode.ON_SUCCESS)
+    public Path workDir;
 
     @BeforeEach
     public void beforeEach()
@@ -317,7 +316,7 @@ public class XmlConfigurationTest
             rawXml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                 "<!DOCTYPE Configure PUBLIC \"-//Jetty//Configure//EN\" \"https://www.eclipse.org/jetty/configure_10_0.dtd\">\n" +
                 rawXml;
-        Path testFile = workDir.getEmptyPathDir().resolve(filename);
+        Path testFile = workDir.resolve(filename);
         try (BufferedWriter writer = Files.newBufferedWriter(testFile, UTF_8))
         {
             writer.write(rawXml);
