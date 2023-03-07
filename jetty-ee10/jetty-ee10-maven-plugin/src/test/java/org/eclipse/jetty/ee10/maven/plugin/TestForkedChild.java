@@ -22,6 +22,7 @@ import java.net.HttpURLConnection;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.URL;
+import java.nio.file.Path;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +37,8 @@ import org.hamcrest.Matchers;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.CleanupMode;
+import org.junit.jupiter.api.io.TempDir;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -48,7 +51,8 @@ public class TestForkedChild
 {
     File testDir;
     File baseDir;
-    File tmpDir;
+    @TempDir(cleanup = CleanupMode.ON_SUCCESS)
+    Path tmpDir;
     File tokenFile;
     File webappPropsFile;
     int stopPort;
@@ -79,7 +83,7 @@ public class TestForkedChild
 
                 MavenWebAppContext webapp = new MavenWebAppContext();
                 webapp.setContextPath("/foo");
-                webapp.setTempDirectory(tmpDir);
+                webapp.setTempDirectory(tmpDir.toFile());
                 webapp.setBaseResourceAsPath(baseDir.toPath());
                 WebAppPropertyConverter.toProperties(webapp, webappPropsFile, null);
                 child = new JettyForkedChild(cmd.toArray(new String[0]));
@@ -99,8 +103,7 @@ public class TestForkedChild
         baseDir = MavenTestingUtils.getTestResourceDir("root");
         testDir = MavenTestingUtils.getTargetTestingDir("forkedChild");
         FS.ensureEmpty(testDir);
-        tmpDir = new File(testDir, "tmp");
-        webappPropsFile = new File(testDir, "webapp.props");
+        webappPropsFile = new File(tmpDir.toFile(), "webapp.props");
 
         String stopPortString = System.getProperty("stop.port");
         assertNotNull(stopPortString, "stop.port System property");
@@ -111,7 +114,7 @@ public class TestForkedChild
 
         Random random = new Random();
         token = Long.toString(random.nextLong() ^ System.currentTimeMillis(), 36).toUpperCase(Locale.ENGLISH);
-        tokenFile = testDir.toPath().resolve(token + ".txt").toFile();
+        tokenFile = tmpDir.resolve(token + ".txt").toFile();
     }
     
     @AfterEach
