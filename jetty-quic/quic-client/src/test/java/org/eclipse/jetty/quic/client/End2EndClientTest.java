@@ -78,6 +78,7 @@ public class End2EndClientTest
         HttpConnectionFactory http1 = new HttpConnectionFactory(httpConfiguration);
         HTTP2ServerConnectionFactory http2 = new HTTP2ServerConnectionFactory(httpConfiguration);
         connector = new QuicServerConnector(server, sslContextFactory, http1, http2);
+        connector.getQuicConfiguration().setVerifyPeerCertificates(true);
         server.addConnector(connector);
 
         server.setHandler(new AbstractHandler()
@@ -223,6 +224,40 @@ public class End2EndClientTest
             client.newRequest("https://localhost:" + connector.getLocalPort())
                     .version(HttpVersion.HTTP_2)
                     .timeout(5, TimeUnit.SECONDS)
+                    .send();
+        });
+
+        Assertions.assertInstanceOf(ClosedChannelException.class, exception.getCause());
+    }
+
+    @Test
+    void testUntrustedClientHTTP2() throws Exception
+    {
+        LifeCycle.stop(client);
+
+        SslContextFactory.Client clientSslContextFactory = new SslContextFactory.Client();
+        clientSslContextFactory.setKeyStorePath("src/test/resources/certs/untrusted/untrusted.p12");
+        clientSslContextFactory.setKeyStorePassword("storepwd");
+        clientSslContextFactory.setTrustStorePath("src/test/resources/certs/trustStore.jks");
+        clientSslContextFactory.setTrustStorePassword("password");
+
+        QuicClientConnectorConfigurator configurator = new QuicClientConnectorConfigurator();
+        configurator.getQuicConfiguration().setVerifyPeerCertificates(true);
+        ClientConnector clientConnector = new ClientConnector(configurator);
+        clientConnector.setSslContextFactory(clientSslContextFactory);
+
+        HTTP2Client http2Client = new HTTP2Client(clientConnector);
+        ClientConnectionFactoryOverHTTP2.HTTP2 http2Info = new ClientConnectionFactoryOverHTTP2.HTTP2(http2Client);
+
+        HttpClientTransportDynamic transport = new HttpClientTransportDynamic(clientConnector, http2Info);
+        client = new HttpClient(transport);
+        client.start();
+
+        Exception exception = Assertions.assertThrows(ExecutionException.class, () ->
+        {
+            client.newRequest("https://localhost:" + connector.getLocalPort())
+                    .version(HttpVersion.HTTP_2)
+                    .timeout(10, TimeUnit.SECONDS)
                     .send();
         });
 
