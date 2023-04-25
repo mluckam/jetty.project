@@ -16,6 +16,7 @@ package org.eclipse.jetty.quic.client;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.channels.ClosedChannelException;
+import java.net.SocketTimeoutException;
 import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -261,6 +262,8 @@ public class End2EndClientTest
                     .send();
         });
 
-        Assertions.assertInstanceOf(ClosedChannelException.class, exception.getCause());
+        Exception cause = exception.getCause();
+        // Fix for https://github.com/eclipse/jetty.project/pull/9490#issuecomment-1507974998
+        Assertions.assertTrue(cause instanceof ClosedChannelException || cause instanceof SocketTimeoutException);
     }
 }
